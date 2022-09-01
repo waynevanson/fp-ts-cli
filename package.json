@@ -1,0 +1,41 @@
+{
+  "name": "fp-ts-cli",
+  "version": "0.0.0",
+  "description": "fp-ts compatible library for creating command line interfaces",
+  "main": "dist/esm/index.js",
+  "module": "dist/esm/index.js",
+  "type": "module",
+  "author": "Wayne Van Son",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "tsc -p .config/tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@jest/types": "^28.1.3",
+    "@types/jest": "^28.1.7",
+    "@types/node": "^18.7.10",
+    "fp-ts": "^2.12.2",
+    "jest": "^28.1.3",
+    "prettier": "^2.7.1",
+    "ts-jest": "^28.0.8",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "fast-check": "^3.1.2",
+    "fp-ts-std": "^0.14.2",
+    "io-ts": "^2.2.17",
+    "monocle-ts": "^2.3.13",
+    "newtype-ts": "^0.3.5",
+    "parser-ts": "^0.6.16"
+  },
+  "peerDependencies": {
+    "fp-ts": "^2.12.2"
+  },
+  "peerDependenciesMeta": {
+    "fp-ts": {
+      "optional": false
+    }
+  }
+}
