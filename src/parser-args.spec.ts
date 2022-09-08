@@ -1,5 +1,4 @@
-import { either } from "fp-ts";
-import { parser, stream, string, parseResult } from "parser-ts";
+import { parseResult, stream, string } from "parser-ts";
 import * as parserArgs from "./parser-args";
 
 describe("parser-args", () => {
@@ -23,7 +22,6 @@ describe("parser-args", () => {
       const result = parserArgs.fromParserString(fa);
       const buffer = [text.split("")];
       const start = stream.stream(buffer, 0);
-      const next = stream.stream(buffer, buffer.length);
       const actual = result(start);
       const expected = parseResult.error(start, [`"${badness}"`]);
       expect(actual).toStrictEqual(expected);

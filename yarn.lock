@@ -1117,6 +1117,11 @@ find-up@^4.0.0, find-up@^4.1.0:
     locate-path "^5.0.0"
     path-exists "^4.0.0"
 
+fp-ts-indexed-monad@^2.10.3:
+  version "2.10.3"
+  resolved "https://registry.yarnpkg.com/fp-ts-indexed-monad/-/fp-ts-indexed-monad-2.10.3.tgz#1fa7875531201ef5f91377e3218dc6809dc2a599"
+  integrity sha512-UTS+JxzilMffMi6nxSrQgLN9m844N207WqN3fETH496xoKRu13cXlSfsNlFCpGCSs8+qtZ08fNquKYyh/2oQzQ==
+
 fp-ts-std@^0.14.2:
   version "0.14.2"
   resolved "https://registry.yarnpkg.com/fp-ts-std/-/fp-ts-std-0.14.2.tgz#d8746920777f776dfd4200fcdb34acb7d58d4a27"

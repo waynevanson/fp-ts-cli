@@ -1,5 +1,3 @@
-import * as stateReaderParser from "./state-reader-parser";
-
 export const URI = "Cli";
 export type URI = typeof URI;
 
@@ -9,13 +7,14 @@ export interface Env {
   readonly stderr: WritableStream;
 }
 
-export interface State {}
+export type Buffer = ReadonlyArray<string>;
 
-export interface Cli<A>
-  extends stateReaderParser.StateReaderParser<Env, string, State, A> {}
+export interface Cli<I, O, A> {
+  (i: I): (r: Env) => () => [A, O];
+}
 
 declare module "fp-ts/HKT" {
-  export interface URItoKind<A> {
-    readonly [URI]: Cli<A>;
+  export interface URItoKind3<R, E, A> {
+    readonly [URI]: Cli<R, E, A>;
   }
 }

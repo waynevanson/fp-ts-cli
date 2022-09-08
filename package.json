@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "fast-check": "^3.1.2",
+    "fp-ts-indexed-monad": "^2.10.3",
     "fp-ts-std": "^0.14.2",
     "io-ts": "^2.2.17",
     "monocle-ts": "^2.3.13",

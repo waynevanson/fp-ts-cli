@@ -3,5 +3,6 @@
     "strict": true,
     "esModuleInterop": true,
     "stripInternal": true
-  }
+  },
+  "exclude": ["dist/"]
 }

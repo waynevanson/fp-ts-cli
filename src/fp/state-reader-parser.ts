@@ -1,4 +1,4 @@
-import { reader, stateT } from "fp-ts";
+import { stateT } from "fp-ts";
 import { Applicative4 } from "fp-ts/lib/Applicative";
 import { Apply4 } from "fp-ts/lib/Apply";
 import { Chain4 } from "fp-ts/lib/Chain";
@@ -6,10 +6,8 @@ import { Functor4 } from "fp-ts/lib/Functor";
 import { Monad4 } from "fp-ts/lib/Monad";
 import { NaturalTransformation24 } from "fp-ts/lib/NaturalTransformation";
 import { Pointed4 } from "fp-ts/lib/Pointed";
-import * as readerParser from "./reader-parser";
 import { parser } from "parser-ts";
-import { Endomorphism } from "fp-ts/lib/Endomorphism";
-import { pipe } from "fp-ts/lib/function";
+import * as readerParser from "./reader-parser";
 
 export const URI = "StateReaderParser";
 export type URI = typeof URI;
