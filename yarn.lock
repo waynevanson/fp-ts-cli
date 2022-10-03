@@ -1117,6 +1117,11 @@ find-up@^4.0.0, find-up@^4.1.0:
     locate-path "^5.0.0"
     path-exists "^4.0.0"
 
+fp-ts-contrib@^0.1.29:
+  version "0.1.29"
+  resolved "https://registry.yarnpkg.com/fp-ts-contrib/-/fp-ts-contrib-0.1.29.tgz#5d3c07bab21bb1c0491ca8d6f82d75fc7463b0cf"
+  integrity sha512-y+f+xlZqYgj2t+Alu/oat10UC491PByvH7XrT0ITc/DbDJK7LDJLShZJy2orjE7PlcJkO5niDenc1A/woyeB/Q==
+
 fp-ts-indexed-monad@^2.10.3:
   version "2.10.3"
   resolved "https://registry.yarnpkg.com/fp-ts-indexed-monad/-/fp-ts-indexed-monad-2.10.3.tgz#1fa7875531201ef5f91377e3218dc6809dc2a599"
@@ -1127,10 +1132,10 @@ fp-ts-std@^0.14.2:
   resolved "https://registry.yarnpkg.com/fp-ts-std/-/fp-ts-std-0.14.2.tgz#d8746920777f776dfd4200fcdb34acb7d58d4a27"
   integrity sha512-BZOtcnw+uubEifYIObe3Se4FvfN9pC6DT72nyQ5KYxsEnQPMmAaWWKARVqfwLwB1hsXX4eMTuH2k6ab/+4wePw==
 
-fp-ts@^2.12.2:
-  version "2.12.2"
-  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.12.2.tgz#a191db2dbbb04f48a0e75050b94f57cc876c7b40"
-  integrity sha512-v8J7ud+nTkP5Zz17GhpCsY19wiRbB9miuj61nBcCJyDpu52zs9Z4O7OLDfYoKFQMJ9EsSZA7W1vRgC1d3jy5qw==
+fp-ts@^2.12.3:
+  version "2.12.3"
+  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.12.3.tgz#d991b1e8467d325dadbb6b0ab9524f773e9c3c49"
+  integrity sha512-8m0XvW8kZbfnJOA4NvSVXu95mLbPf4LQGwQyqVukIYS4KzSNJiyKSmuZUmbVHteUi6MGkAJGPb0goPZqI+Tsqg==
 
 fs.realpath@^1.0.0:
   version "1.0.0"

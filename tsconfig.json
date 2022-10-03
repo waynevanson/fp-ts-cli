@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "strict": true,
     "esModuleInterop": true,
-    "stripInternal": true
+    "strict": true,
+    "stripInternal": true,
+    "strictNullChecks": true
   },
   "exclude": ["dist/"]
 }
