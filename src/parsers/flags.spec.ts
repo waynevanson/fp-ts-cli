@@ -1,7 +1,7 @@
 import { constVoid, pipe, tuple } from "fp-ts/lib/function"
 import { parseResult, stream } from "parser-ts"
-import * as flags from "./flags"
-import { toBuffer } from "./test-utils"
+import * as flags from "./flag"
+import { toBuffer } from "../test-utils"
 
 describe("flags", () => {
   describe("named", () => {
@@ -42,12 +42,12 @@ describe("flags", () => {
       })
     })
 
-    describe(flags.alias, () => {
+    describe(flags.aliases, () => {
       it.todo("should match the alias with a long flag")
       it.todo("should match only one of the aliases")
     })
 
-    describe(flags.short, () => {
+    describe(flags.shorts, () => {
       it.todo("should match when the short flag is provided")
       it.todo(
         "should not match any short when the non-short flag has been provided"
