@@ -167,7 +167,14 @@ export const flags__ =
     const result = pipe(
       a,
       either.chain((t) =>
-        parseResult.success(tuple(t.value as T, command_), t.next, t.start)
+        parseResult.success(
+          tuple(
+            readonlyRecord.map((a) => (a as any)[0])(t.value) as never,
+            command_
+          ),
+          t.next,
+          t.start
+        )
       )
     )
 

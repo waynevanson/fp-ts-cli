@@ -8,7 +8,7 @@ import { toBuffer } from "../test-utils"
 describe("command", () => {
   describe("flags", () => {
     it("should ensure both required flags are present", () => {
-      expect.assertions(2)
+      expect.assertions(1)
 
       const flagOne = pipe(
         flag.long("flag-one"),
@@ -26,23 +26,23 @@ describe("command", () => {
         flag.required
       )
 
-      const flags = command.flags({
+      const flags = command.flags__({
         flagOne,
         flagTwo,
       })
 
-      const buffer = toBuffer([""])
+      const buffer = toBuffer(["--flag-one", "--flag-two"])
       const start = stream.stream(buffer)
       const next = stream.stream(buffer, buffer.length)
 
       const result = flags(start)
       const expected = parseResult.success(
         tuple(
-          { flagOne: "flagValueOne", flagTwo: "flagValueTwo" },
+          { flagOne: "flagOneValue", flagTwo: "flagTwoValue" },
           command.command_
         ),
-        start,
-        next
+        next,
+        start
       )
 
       expect(result).toStrictEqual(expected)
