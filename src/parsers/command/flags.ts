@@ -222,7 +222,6 @@ export const flags =
     [P in keyof T]: flag.FlagParser<flag.Flag, T[P]>
   }): flag.FlagParser<Command, T> =>
   (start) =>
-    //@ts-ignore
     pipe(
       tailRec(
         {
@@ -235,5 +234,5 @@ export const flags =
         },
         fromRec(start)
       ),
-      mapParseResult((t) => tuple(t, command_))
+      mapParseResult((t) => tuple(t as T, command_))
     )

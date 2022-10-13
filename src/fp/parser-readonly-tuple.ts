@@ -15,4 +15,5 @@ declare module "fp-ts/HKT" {
 }
 
 export const map = functor.map(parser.Functor, readonlyTuple.Functor)
+
 export const Functor: Functor3<URI> = { URI, map: (fa, f) => map(f)(fa) }
