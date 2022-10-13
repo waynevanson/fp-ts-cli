@@ -48,4 +48,47 @@ describe("command", () => {
       expect(result).toStrictEqual(expected)
     })
   })
+
+  describe("subcommands", () => {
+    it("should allow multiple commands", () => {
+      expect.assertions(1)
+
+      const flagOne = pipe(
+        flag.long("flag-one"),
+        flag.aliases("flag-one-alias-one", "flag-one-alias-two"),
+        flag.shorts("o"),
+        flag.argumentless("flagOneValue"),
+        flag.required
+      )
+
+      const flagTwo = pipe(
+        flag.long("flag-two"),
+        flag.aliases("flag-two-alias-one", "flag-two-alias-two"),
+        flag.shorts("o"),
+        flag.argumentless("flagTwoValue"),
+        flag.required
+      )
+
+      const flagsOne = command.flags__({ flagOne })
+
+      const flagsTwo = command.flags__({ flagTwo })
+
+      const buffer = toBuffer(["--flag-one"])
+      const start = stream.stream(buffer)
+      const next = stream.stream(buffer, buffer.length)
+
+      const result = command.subcommands({ flagsOne, flagsTwo })(start)
+
+      const expected = parseResult.success(
+        tuple(
+          { _type: "flagsOne", value: { flagOne: "flagOneValue" } },
+          command.command_
+        ),
+        next,
+        start
+      )
+
+      expect(result).toStrictEqual(expected)
+    })
+  })
 })
