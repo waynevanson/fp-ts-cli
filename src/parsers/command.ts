@@ -77,20 +77,6 @@ const fromFlag = <A>(
     either.getOrElse((a) => fromError([k, a]))
   )
 
-/**
- * @summary
- * Create a command from a single flag.
- *
- * @category Constructor
- */
-
-const tap =
-  <A, B = A>(f: (a: A) => B = (a) => a as any) =>
-  (a: A): A => {
-    console.log(f(a))
-    return a
-  }
-
 const onErrorLast = (
   errors: ReadonlyArray<Error>,
   input: stream.Stream<ReadonlyArray<string>>
@@ -189,17 +175,19 @@ type Rec = {
   remaining: Record<string, flag.FlagParser<flag.Flag, any>>
   input: stream.Stream<ReadonlyArray<string>>
 }
-// if requires are !== 1, fatal cut
-// if at end, use all optional values
-// if all are errors, and any fatal, cut.
-export const flags__ =
+
+/**
+ * @summary
+ * Create a command from a single flag.
+ *
+ * @category Constructor
+ */
+export const flags =
   <T extends Record<string, any>>(structs: {
     [P in keyof T]: flag.FlagParser<flag.Flag, T[P]>
   }): flag.FlagParser<Command, T> =>
-  (start) => {
-    // right is parseResult
-
-    const result = pipe(
+  (start) =>
+    pipe(
       tailRec(
         {
           complete: {} as Record<string, any>,
@@ -219,9 +207,6 @@ export const flags__ =
         )
       )
     )
-
-    return result
-  }
 
 // argument, can it go between flags? should be if we can.
 // nonempty

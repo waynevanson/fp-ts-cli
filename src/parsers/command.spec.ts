@@ -27,7 +27,7 @@ describe("command", () => {
         flag.required
       )
 
-      const flags = command.flags__({
+      const flags = command.flags({
         flagOne,
         flagTwo,
       })
@@ -68,7 +68,7 @@ describe("command", () => {
         flag.optional
       )
 
-      const flags = command.flags__({
+      const flags = command.flags({
         flagOne,
         flagTwo,
       })
@@ -109,7 +109,7 @@ describe("command", () => {
         flag.optional
       )
 
-      const flags = command.flags__({
+      const flags = command.flags({
         flagOne,
         flagTwo,
       })
@@ -152,9 +152,9 @@ describe("command", () => {
         flag.required
       )
 
-      const flagsOne = command.flags__({ flagOne })
+      const flagsOne = command.flags({ flagOne })
 
-      const flagsTwo = command.flags__({ flagTwo })
+      const flagsTwo = command.flags({ flagTwo })
 
       const buffer = toBuffer(["--flag-one"])
       const start = stream.stream(buffer)
