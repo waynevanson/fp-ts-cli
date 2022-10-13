@@ -17,6 +17,7 @@ import * as parserArgs from "./args"
 import { parser, parseResult, stream } from "parser-ts"
 import { tailRec } from "fp-ts/lib/ChainRec"
 import { Environment } from ".."
+import { sequenceS } from "fp-ts/lib/Apply"
 
 export interface Command
   extends Newtype<{ readonly Command: unique symbol }, void> {}
@@ -208,11 +209,15 @@ export const flags =
       )
     )
 
+type EnforceNonEmptyRecord<R> = keyof R extends never ? never : R
+
 // argument, can it go between flags? should be if we can.
 // nonempty
-export const subcommands = <T extends Record<string, any>>(sum: {
-  [P in keyof T]: flag.FlagParser<Command, T[P]>
-}): flag.FlagParser<
+export const subcommands = <T extends Record<string, any>>(
+  sum: EnforceNonEmptyRecord<{
+    [P in keyof T]: flag.FlagParser<Command, T[P]>
+  }>
+): flag.FlagParser<
   Command,
   { [P in keyof T]: { _type: P; value: T[P] } }[keyof T]
 > =>
