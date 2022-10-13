@@ -4,6 +4,7 @@ import {
   monoid,
   readonlyArray,
   readonlyRecord,
+  readonlyTuple,
   separated,
   state,
   string,
@@ -15,6 +16,7 @@ import * as parserString from "./string"
 import * as parserArgs from "./args"
 import { parser, parseResult, stream } from "parser-ts"
 import { tailRec } from "fp-ts/lib/ChainRec"
+import { Environment } from ".."
 
 export interface Command
   extends Newtype<{ readonly Command: unique symbol }, void> {}
@@ -198,3 +200,16 @@ export const subcommands = <T extends Record<string, any>>(sum: {
         )
     )
   )
+
+export const parse =
+  (arguments_: Array<string>) =>
+  <A>(
+    command: flag.FlagParser<Command, A>
+  ): parseResult.ParseResult<ReadonlyArray<string>, A> =>
+    pipe(
+      arguments_,
+      readonlyArray.map((string) => string.split("")),
+      readonlyArray.toArray,
+      stream.stream,
+      pipe(command, parser.map(readonlyTuple.fst))
+    )
