@@ -90,6 +90,105 @@ const tap =
     console.log(f(a))
     return a
   }
+
+const onErrorLast = (
+  errors: ReadonlyArray<Error>,
+  input: stream.Stream<ReadonlyArray<string>>
+) =>
+  either.right(
+    parseResult.error(
+      input,
+      pipe(
+        errors,
+        readonlyArray.chain((a) => a[1].expected),
+        readonlyArray.toArray
+      ),
+      true
+    )
+  )
+
+const onSuccessRequiredFlag = (head: Require, state: Rec) =>
+  either.left({
+    complete: { ...state.complete, [head[0]]: head[1].value },
+    input: head[1].next,
+    remaining: pipe(state.remaining, readonlyRecord.deleteAt(head[0])),
+  })
+
+const onErrorRequiredFlag = (head: Require) =>
+  either.right(parseResult.error(head[1].start, ["requiredFlag"], true))
+
+const onSomeOptionals = (
+  optionals: ReadonlyArray<Optional>,
+  { complete, remaining }: Rec
+) =>
+  either.left({
+    complete: {
+      ...complete,
+      ...pipe(
+        optionals,
+        readonlyArray.reduce({}, (b, a) => ({
+          ...b,
+          [a[0]]: a[1].value,
+        }))
+      ),
+    },
+    remaining: pipe(
+      remaining,
+      readonlyRecord.filterWithIndex((k) =>
+        pipe(
+          optionals,
+          readonlyArray.some((a) => a[0] !== k)
+        )
+      )
+    ),
+    input: optionals[0][1].next,
+  })
+
+const onNothings = (start: stream.Stream<ReadonlyArray<string>>, rec: Rec) =>
+  either.right(parseResult.success(rec.complete, rec.input, start))
+
+const fromStatey =
+  (
+    start: stream.Stream<ReadonlyArray<string>>,
+    { complete, input, remaining }: Rec
+  ) =>
+  ({ errors, optionals, requires }: Statey) =>
+    pipe(
+      requires,
+      readonlyArray.matchLeft(
+        () =>
+          optionals.length === 0 && errors.length === 0
+            ? onNothings(start, { complete, input, remaining })
+            : optionals.length > 0
+            ? onSomeOptionals(optionals, { complete, input, remaining })
+            : onErrorLast(errors, input),
+        (head, tail) =>
+          tail.length === 0
+            ? onSuccessRequiredFlag(head, {
+                complete,
+                input,
+                remaining,
+              }) // recurse to next rec
+            : // fail because we couldn't extract a flag
+              onErrorRequiredFlag(head)
+      )
+    )
+
+const fromRec =
+  (start: stream.Stream<ReadonlyArray<string>>) =>
+  ({ complete, input, remaining }: Rec) =>
+    pipe(
+      remaining,
+      readonlyRecord.flap(input),
+      readonlyRecord.foldMapWithIndex(string.Ord)(m)(fromFlag),
+      fromStatey(start, { complete, input, remaining })
+    )
+
+type Rec = {
+  complete: Record<string, any>
+  remaining: Record<string, flag.FlagParser<flag.Flag, any>>
+  input: stream.Stream<ReadonlyArray<string>>
+}
 // if requires are !== 1, fatal cut
 // if at end, use all optional values
 // if all are errors, and any fatal, cut.
@@ -99,80 +198,16 @@ export const flags__ =
   }): flag.FlagParser<Command, T> =>
   (start) => {
     // right is parseResult
-    const a = tailRec(
-      {
-        complete: {} as Record<string, any>,
-        remaining: structs as Record<string, flag.FlagParser<flag.Flag, any>>,
-        input: start,
-      },
-      ({ complete, input, remaining }) =>
-        pipe(
-          remaining,
-          readonlyRecord.flap(input),
-          readonlyRecord.foldMapWithIndex(string.Ord)(m)(fromFlag),
-          ({ errors, optionals, requires }) =>
-            pipe(
-              requires,
-              readonlyArray.matchLeft(
-                () =>
-                  optionals.length === 0 && errors.length === 0
-                    ? either.right(parseResult.success(complete, input, start))
-                    : optionals.length > 0
-                    ? either.left({
-                        complete: {
-                          ...complete,
-                          ...pipe(
-                            optionals,
-                            readonlyArray.reduce({}, (b, a) => ({
-                              ...b,
-                              [a[0]]: a[1].value,
-                            }))
-                          ),
-                        },
-                        remaining: pipe(
-                          remaining,
-                          readonlyRecord.filterWithIndex((k) =>
-                            pipe(
-                              optionals,
-                              readonlyArray.some((a) => a[0] !== k)
-                            )
-                          )
-                        ),
-                        input: optionals[0][1].next,
-                      })
-                    : either.right(
-                        parseResult.error(
-                          input,
-                          pipe(
-                            errors,
-                            readonlyArray.chain((a) => a[1].expected),
-                            readonlyArray.toArray
-                          ),
-                          true
-                        )
-                      ),
-                (head, tail) =>
-                  tail.length === 0
-                    ? // recurse to next rec
-                      either.left({
-                        complete: { ...complete, [head[0]]: head[1].value },
-                        input: head[1].next,
-                        remaining: pipe(
-                          remaining,
-                          readonlyRecord.deleteAt(head[0])
-                        ),
-                      })
-                    : // fail because we couldn't extract a flag
-                      either.right(
-                        parseResult.error(head[1].start, ["requiredFlag"], true)
-                      )
-              )
-            )
-        )
-    )
 
     const result = pipe(
-      a,
+      tailRec(
+        {
+          complete: {} as Record<string, any>,
+          remaining: structs as Record<string, flag.FlagParser<flag.Flag, any>>,
+          input: start,
+        } as Rec,
+        fromRec(start)
+      ),
       either.chain((t) =>
         parseResult.success(
           tuple(
@@ -227,3 +262,6 @@ export const parse =
       stream.stream,
       pipe(command, parser.map(readonlyTuple.fst))
     )
+
+// how to parse arguments?
+// if all flags fail, try arguments?
