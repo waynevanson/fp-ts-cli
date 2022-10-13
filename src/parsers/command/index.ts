@@ -12,7 +12,11 @@ export const flags: <T extends Record<string, any>>(structs: {
 export interface Command
   extends Newtype<{ readonly Command: unique symbol }, void> {}
 
+export interface SubCommands
+  extends Newtype<{ readonly SubCommands: unique symbol }, void> {}
+
 export const command_ = iso<Command>().from()
+export const subcommands_ = iso<SubCommands>().from()
 
 export type EnforceNonEmptyRecord<R> = keyof R extends never ? never : R
 
@@ -25,7 +29,7 @@ export const subcommands = <T extends Record<string, any>>(
     [P in keyof T]: flag.FlagParser<Command, T[P]>
   }>
 ): flag.FlagParser<
-  Command,
+  SubCommands,
   { [P in keyof T]: { _type: P; value: T[P] } }[keyof T]
 > =>
   pipe(
