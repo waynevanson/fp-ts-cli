@@ -83,6 +83,13 @@ const fromFlag = <A>(
  *
  * @category Constructor
  */
+
+const tap =
+  <A, B = A>(f: (a: A) => B = (a) => a as any) =>
+  (a: A): A => {
+    console.log(f(a))
+    return a
+  }
 // if requires are !== 1, fatal cut
 // if at end, use all optional values
 // if all are errors, and any fatal, cut.
@@ -118,7 +125,7 @@ export const flags__ =
                             optionals,
                             readonlyArray.reduce({}, (b, a) => ({
                               ...b,
-                              [a[0]]: a[1],
+                              [a[0]]: a[1].value,
                             }))
                           ),
                         },
@@ -127,11 +134,11 @@ export const flags__ =
                           readonlyRecord.filterWithIndex((k) =>
                             pipe(
                               optionals,
-                              readonlyArray.some((a) => a[0] === k)
+                              readonlyArray.some((a) => a[0] !== k)
                             )
                           )
                         ),
-                        input,
+                        input: optionals[0][1].next,
                       })
                     : either.right(
                         parseResult.error(
@@ -169,7 +176,7 @@ export const flags__ =
       either.chain((t) =>
         parseResult.success(
           tuple(
-            readonlyRecord.map((a) => (a as any)[0])(t.value) as never,
+            readonlyRecord.map((a) => (a as any)[0])(t.value as any) as never,
             command_
           ),
           t.next,
