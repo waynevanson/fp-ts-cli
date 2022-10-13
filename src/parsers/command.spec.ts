@@ -156,7 +156,7 @@ describe("command", () => {
 
       const flagsTwo = command.flags({ flagTwo })
 
-      const buffer = toBuffer(["--flag-one"])
+      const buffer = toBuffer(["flagOne", "--flag-one"])
       const start = stream.stream(buffer)
       const next = stream.stream(buffer, buffer.length)
 

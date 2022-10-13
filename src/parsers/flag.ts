@@ -4,6 +4,7 @@ import { iso, Newtype } from "newtype-ts"
 import { parser } from "parser-ts"
 import * as parserArgs from "./args"
 import * as parserString from "./string"
+import * as cli from "./cli"
 
 /**
  * @summary
@@ -28,8 +29,6 @@ export interface Flag {
   readonly flagged: Flagged
 }
 
-export type FlagParser<E, A> = parserArgs.ParserArgs<readonly [A, E]>
-
 /** @internal */
 export const named_ = iso<Named>().from()
 
@@ -37,7 +36,7 @@ export const named_ = iso<Named>().from()
  * Creates a long flag (`--flag-name`) with the provided **kebab-case** name.
  * @category Constructor
  */
-export const long = (long: string): FlagParser<Named, void> =>
+export const long = (long: string): cli.CLI<Named, void> =>
   pipe(
     parserString.longFlag(long),
     parserArgs.fromStringParser,
@@ -50,7 +49,7 @@ export const long = (long: string): FlagParser<Named, void> =>
  */
 export const aliases =
   (...aliases: ReadonlyArray<string>) =>
-  (fa: FlagParser<Named, void>): FlagParser<Named, void> =>
+  (fa: cli.CLI<Named, void>): cli.CLI<Named, void> =>
     pipe(
       parserString.longFlags(aliases),
       parserArgs.fromStringParser,
@@ -64,7 +63,7 @@ export const aliases =
  */
 export const shorts =
   (...shorts: ReadonlyArray<string>) =>
-  (fa: FlagParser<Named, void>): FlagParser<Named, void> =>
+  (fa: cli.CLI<Named, void>): cli.CLI<Named, void> =>
     pipe(
       parserString.shortFlags(shorts),
       parserArgs.fromStringParser,
@@ -79,15 +78,15 @@ export const shorts =
  */
 export const argumentless =
   <A>(a: A) =>
-  (fa: FlagParser<Named, void>): FlagParser<Argument, A> =>
+  (fa: cli.CLI<Named, void>): cli.CLI<Argument, A> =>
     pipe(
       fa,
       parser.map(readonlyTuple.bimap(constant(Argument.None), constant(a)))
     )
 
 export const argumental = (
-  fa: FlagParser<Named, void>
-): FlagParser<Argument, option.Option<string>> =>
+  fa: cli.CLI<Named, void>
+): cli.CLI<Argument, option.Option<string>> =>
   pipe(
     fa,
     parser.apSecond(parser.optional(parserArgs.argument)),
@@ -97,9 +96,7 @@ export const argumental = (
 /**
  * Ensure the flag contains an argument and return it.
  */
-export const argument = (
-  fa: FlagParser<Named, void>
-): FlagParser<Argument, string> =>
+export const argument = (fa: cli.CLI<Named, void>): cli.CLI<Argument, string> =>
   pipe(
     fa,
     parser.apSecond(parserArgs.argument),
@@ -109,7 +106,7 @@ export const argument = (
 /**
  * Ensure the flag is always provided.
  */
-export const required = <A>(fa: FlagParser<Argument, A>): FlagParser<Flag, A> =>
+export const required = <A>(fa: cli.CLI<Argument, A>): cli.CLI<Flag, A> =>
   pipe(
     fa,
     parser.cut,
@@ -121,14 +118,9 @@ export const required = <A>(fa: FlagParser<Argument, A>): FlagParser<Flag, A> =>
     )
   )
 
-export const map =
-  <A, B>(f: (a: A) => B) =>
-  <E>(fa: FlagParser<E, A>): FlagParser<E, B> =>
-    pipe(fa, parser.map(readonlyTuple.mapFst(f)))
-
 export const optional = <A>(
-  fa: FlagParser<Argument, A>
-): FlagParser<Flag, option.Option<A>> =>
+  fa: cli.CLI<Argument, A>
+): cli.CLI<Flag, option.Option<A>> =>
   pipe(
     fa,
     parser.optional,
@@ -151,5 +143,6 @@ export const optional = <A>(
  * Useful when used in conjunction with `argumental`.
  */
 export const optionally = <A>(
-  fa: FlagParser<Argument, option.Option<A>>
-): FlagParser<Flag, option.Option<A>> => pipe(fa, optional, map(option.flatten))
+  fa: cli.CLI<Argument, option.Option<A>>
+): cli.CLI<Flag, option.Option<A>> =>
+  pipe(fa, optional, cli.map(option.flatten))

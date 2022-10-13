@@ -13,10 +13,11 @@ import { constTrue, pipe, unsafeCoerce, tuple } from "fp-ts/lib/function"
 import { parseResult, stream } from "parser-ts"
 import { Command, command_ } from "."
 import * as flag from "../flag"
+import * as cli from "../cli"
 
 export interface Rec {
   complete: Record<string, any>
-  remaining: Record<string, flag.FlagParser<flag.Flag, any>>
+  remaining: Record<string, cli.CLI<flag.Flag, any>>
   input: stream.Stream<ReadonlyArray<string>>
 }
 
@@ -219,8 +220,8 @@ const mapParseResult =
  */
 export const flags =
   <T extends Record<string, any>>(structs: {
-    [P in keyof T]: flag.FlagParser<flag.Flag, T[P]>
-  }): flag.FlagParser<Command, T> =>
+    [P in keyof T]: cli.CLI<flag.Flag, T[P]>
+  }): cli.CLI<Command, T> =>
   (start) =>
     pipe(
       tailRec(
@@ -228,7 +229,7 @@ export const flags =
           complete: {},
           remaining: structs as readonlyRecord.ReadonlyRecord<
             string,
-            flag.FlagParser<flag.Flag, any>
+            cli.CLI<flag.Flag, any>
           >,
           input: start,
         },
