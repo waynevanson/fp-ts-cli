@@ -14,6 +14,12 @@ import { parseResult, stream } from "parser-ts"
 import { Command, command_ } from "."
 import * as flag from "../flag"
 
+export interface Rec {
+  complete: Record<string, any>
+  remaining: Record<string, flag.FlagParser<flag.Flag, any>>
+  input: stream.Stream<ReadonlyArray<string>>
+}
+
 export type ReaderRec<A> = reader.Reader<Rec, A>
 
 type Error = parseResult.ParseError<ReadonlyArray<string>>
@@ -194,12 +200,6 @@ const fromRec = (
     ),
     reader.chain(fromStatey(start))
   )
-
-type Rec = {
-  complete: Record<string, any>
-  remaining: Record<string, flag.FlagParser<flag.Flag, any>>
-  input: stream.Stream<ReadonlyArray<string>>
-}
 
 const mapParseResult =
   <A, B>(f: (a: A) => B) =>
