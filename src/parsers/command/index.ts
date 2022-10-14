@@ -33,15 +33,15 @@ export const subcommands = <
   sum: EnforceNonEmptyRecord<{
     [P in keyof T]: cli.CLI<Command, T[P]>
   }>
-): cli.CLI<E, { [P in keyof T]: { _type: P; value: T[P] } }[keyof T]> =>
+): cli.CLI<E, { [P in keyof T]: { _tag: P; value: T[P] } }[keyof T]> =>
   pipe(
     sum,
     readonlyRecord.fromRecord,
     readonlyRecord.map((p) => parser.seq(argument_.required, () => p)),
-    readonlyRecord.mapWithIndex((_type, p) =>
+    readonlyRecord.mapWithIndex((_tag, p) =>
       pipe(
         p,
-        cli.map((value) => ({ _type, value }))
+        cli.map((value) => ({ _tag, value }))
       )
     ),
     readonlyRecord.reduce(string.Ord)(
