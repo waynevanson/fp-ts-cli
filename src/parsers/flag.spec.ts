@@ -143,7 +143,23 @@ describe("flags", () => {
   })
 
   describe(flags.argument, () => {
-    it.todo("should allow an argument to be passed")
+    it("should allow an argument to be passed", () => {
+      fc.assert(
+        fc.property(kebabCase, fc.string(), (long, argument) => {
+          const buffer = toBuffer([`--${long}`, argument])
+          const start = stream.stream(buffer)
+          const next = stream.stream(buffer, buffer.length)
+          const parser = pipe(flags.long(long), flags.argument)
+          const result = parser(start)
+
+          const value = tuple(argument, flags.Argument.Required)
+          const expected = parseResult.success(value, next, start)
+
+          expect(result).toStrictEqual(expected)
+        })
+      )
+    })
+
     it.todo("should fail when there is no argument")
   })
 
