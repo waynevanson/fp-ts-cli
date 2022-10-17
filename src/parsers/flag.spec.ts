@@ -29,19 +29,20 @@ describe("flags", () => {
       })
 
       it("should not match a flag that does not exist", () => {
-        expect.assertions(1)
+        const kebabCaseUnion = kebabCase.chain((a) =>
+          kebabCase.filter((b) => a !== b).map((b) => tuple(a, b))
+        )
 
-        const name1 = "flag-name-included"
-        const name2 = "flag-name-excluded"
-        const flag = `--${name1}`
-        const buffer = toBuffer([flag])
-        const start = stream.stream(buffer)
-
-        const result = flags.long(name2)(start)
-
-        const expected = parseResult.error(start, ["longFlag"])
-
-        expect(result).toStrictEqual(expected)
+        fc.assert(
+          fc.property(kebabCaseUnion, ([included, excluded]) => {
+            const flag = `--${included}`
+            const buffer = toBuffer([flag])
+            const start = stream.stream(buffer)
+            const result = flags.long(excluded)(start)
+            const expected = parseResult.error(start, ["longFlag"])
+            expect(result).toStrictEqual(expected)
+          })
+        )
       })
     })
 
