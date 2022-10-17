@@ -1,8 +1,7 @@
-import { option, readonlyTuple } from "fp-ts"
+import { identity, option, readonlyTuple } from "fp-ts"
 import { constant, constVoid, pipe, tuple } from "fp-ts/lib/function"
 import { iso, Newtype } from "newtype-ts"
 import { parser } from "parser-ts"
-import { parseArgs } from "util"
 import * as parserArgs from "./args"
 import * as cli from "./cli"
 
@@ -62,19 +61,31 @@ const invert = <I, A>(p: parser.Parser<I, A>): parser.Parser<I, void> =>
  */
 export const aliases =
   (...aliases: ReadonlyArray<string>) =>
-  (fa: cli.CLI<Named, void>): cli.CLI<Named, void> => {
-    const match = pipe(parserArgs.longFlags(aliases), parser.map(constVoid))
-
-    const mismatch = pipe(match, invert, parser.lookAhead)
-
-    return pipe(
-      fa,
-      parser.map(constVoid),
-      parser.alt(() => match),
-      parser.apFirst(parser.expected(mismatch, "multipleFlags")),
+  (fa: cli.CLI<Named, void>): cli.CLI<Named, void> =>
+    pipe(
+      identity.Do,
+      identity.apS(
+        "match",
+        pipe(parserArgs.longFlags(aliases), parser.map(constVoid))
+      ),
+      identity.bind("mismatch", ({ match }) =>
+        pipe(
+          match,
+          invert,
+          parser.lookAhead,
+          parserArgs.expected("multipleFlags")
+        )
+      ),
+      identity.apS("main", pipe(fa, parser.map(constVoid))),
+      identity.map(({ match, mismatch, main }) =>
+        pipe(
+          main,
+          parser.alt(() => match),
+          parser.apFirst(mismatch)
+        )
+      ),
       parser.map(constant(tuple(constVoid(), named_)))
     )
-  }
 
 /**
  * Creates short flags (`-f`) with the provided **single character**.
