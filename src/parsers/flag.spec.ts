@@ -213,6 +213,22 @@ describe("flags", () => {
         })
       )
     })
-    it.todo("should succeed when there is no argument")
+
+    it("should succeed when there is no argument", () => {
+      fc.assert(
+        fc.property(kebabCase, (long) => {
+          const buffer = toBuffer([`--${long}`])
+          const start = stream.stream(buffer)
+          const next = stream.stream(buffer, buffer.length)
+          const parser = pipe(flags.long(long), flags.argumental)
+          const result = parser(start)
+
+          const value = tuple(option.none, flags.Argument.Optional)
+          const expected = parseResult.success(value, next, start)
+
+          expect(result).toStrictEqual(expected)
+        })
+      )
+    })
   })
 })
