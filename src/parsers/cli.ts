@@ -15,4 +15,4 @@ declare module "fp-ts/HKT" {
 }
 
 export const map: <A, B>(f: (a: A) => B) => <E>(fa: CLI<E, A>) => CLI<E, B> =
-  parserReadonlyTuple.map
+  parserReadonlyTuple.mapFst
