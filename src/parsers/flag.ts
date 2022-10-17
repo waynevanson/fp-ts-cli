@@ -1,9 +1,9 @@
-import { identity, option, readonlyTuple } from "fp-ts"
+import { identity, option, readonlyTuple } from "../fp"
 import { constant, constVoid, pipe, tuple } from "fp-ts/lib/function"
 import { iso, Newtype } from "newtype-ts"
-import { parser } from "parser-ts"
 import * as parserArgs from "./args"
 import * as cli from "./cli"
+import { parser } from "../fp/parser"
 
 /**
  * @summary
@@ -41,19 +41,6 @@ export const long = (long: string): cli.CLI<Named, void> =>
     parser.map(constant(tuple(constVoid(), named_)))
   )
 
-// fail a parser
-const invert = <I, A>(p: parser.Parser<I, A>): parser.Parser<I, void> =>
-  pipe(
-    p,
-    parser.optional,
-    parser.chain(
-      option.match(
-        () => parser.succeed(constVoid()),
-        () => parser.zero()
-      )
-    )
-  )
-
 // match one of, then match nonof
 /**
  * Creates additional long flags (`--flag-alias`) with the provided **kebab-case** name.
@@ -71,9 +58,9 @@ export const aliases =
       identity.bind("mismatch", ({ match }) =>
         pipe(
           match,
-          invert,
+          parser.invert("match"),
           parser.lookAhead,
-          parserArgs.expected("multipleFlags")
+          parser.expected("multipleFlags")
         )
       ),
       identity.apS("main", pipe(fa, parser.map(constVoid))),

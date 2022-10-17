@@ -2,6 +2,7 @@ import { either, option, readonlyArray } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
 import { Monoid } from "fp-ts/lib/Monoid"
 import { char, parser, parseResult, stream, string } from "parser-ts"
+import { expected, getAltMonoid } from "../fp/parser/parser"
 
 export type Arg = string
 export type Args = ReadonlyArray<Arg>
@@ -33,11 +34,6 @@ export const argument = pipe(
   parser.map((chars): Arg => chars.join(""))
 )
 
-export const expected =
-  (message: string) =>
-  <I, A>(p: parser.Parser<I, A>) =>
-    parser.expected(p, message)
-
 export const longFlag = (long: string) =>
   pipe(
     string.string("--"),
@@ -53,11 +49,6 @@ export const shortFlag = (short: string) =>
     fromStringParser,
     expected("shortFlag")
   )
-
-export const getAltMonoid = <I, A>(): Monoid<parser.Parser<I, A>> => ({
-  concat: (x, y) => pipe(parser.either(x, () => y)),
-  empty: parser.zero<I, A>(),
-})
 
 export const monoidAltString = getAltMonoid<Args, string>()
 
