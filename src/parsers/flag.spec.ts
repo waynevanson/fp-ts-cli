@@ -1,28 +1,31 @@
 import { constVoid, pipe, tuple } from "fp-ts/lib/function"
 import { parseResult, stream } from "parser-ts"
 import * as flags from "./flag"
-import { toBuffer } from "../test-utils"
+import { kebabCase, toBuffer } from "../test-utils"
+import fc from "fast-check"
 
 describe("flags", () => {
   describe("named", () => {
     describe(flags.long, () => {
       it("should match --flag-name", () => {
-        expect.assertions(1)
-        const name = "flag-name"
-        const flag = `--${name}`
-        const buffer = toBuffer([flag])
-        const start = stream.stream(buffer)
-        const next = stream.stream(buffer, buffer.length)
+        fc.assert(
+          fc.property(kebabCase, (name) => {
+            const flag = `--${name}`
+            const buffer = toBuffer([flag])
+            const start = stream.stream(buffer)
+            const next = stream.stream(buffer, buffer.length)
 
-        const result = flags.long(name)(start)
+            const result = flags.long(name)(start)
 
-        const expected = parseResult.success(
-          tuple(constVoid(), flags.named_),
-          next,
-          start
+            const expected = parseResult.success(
+              tuple(constVoid(), flags.named_),
+              next,
+              start
+            )
+
+            expect(result).toStrictEqual(expected)
+          })
         )
-
-        expect(result).toStrictEqual(expected)
       })
 
       it("should not match a flag that does not exist", () => {
