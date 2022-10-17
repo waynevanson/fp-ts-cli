@@ -133,7 +133,7 @@ describe("command", () => {
   })
 
   describe("subcommands", () => {
-    it("should allow multiple commands", () => {
+    it.skip("should allow multiple commands", () => {
       expect.assertions(1)
 
       const flagOne = pipe(
