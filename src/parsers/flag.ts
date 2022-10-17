@@ -135,6 +135,7 @@ export const argument = (fa: cli.CLI<Named, void>): cli.CLI<Argument, string> =>
   pipe(
     fa,
     parser.apSecond(parserArgs.argument),
+    parser.expected("Argument"),
     parser.map((string) => tuple(string, Argument.Required))
   )
 
