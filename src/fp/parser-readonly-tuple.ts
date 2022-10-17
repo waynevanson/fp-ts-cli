@@ -96,4 +96,4 @@ export const getChainRec = <E>(S: Semigroup<E>): ChainRec3C<URI, E> => {
   }
 }
 
-export const flap = functor.flap(parser.Functor, readonlyTuple.Functor)
+export const flap = functor.flap(parser.Functor)
