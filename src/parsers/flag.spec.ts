@@ -178,7 +178,21 @@ describe("flags", () => {
   })
 
   describe(flags.argumentless, () => {
-    it.todo("should succeed when there is no argument")
+    it("should succeed when there is no argument", () => {
+      fc.assert(
+        fc.property(kebabCase, fc.string(), (long, argument) => {
+          const buffer = toBuffer([`--${long}`])
+          const start = stream.stream(buffer)
+          const next = stream.stream(buffer, buffer.length)
+          const parser = pipe(flags.long(long), flags.argumentless(argument))
+          const result = parser(start)
+          const value = tuple(argument, flags.Argument.None)
+          const expected = parseResult.success(value, next, start)
+
+          expect(result).toStrictEqual(expected)
+        })
+      )
+    })
   })
 
   describe(flags.argumental, () => {
