@@ -27,6 +27,41 @@ describe("flag new", () => {
       })
     )
   })
+
+  it("should allow two flags in conjunction", () => {
+    const flag_ = fc
+      .tuple(kebabCase, fc.string(), fc.string())
+      .map(([long, argument, name]) => ({
+        long,
+        argument,
+        name,
+        flag: pipe(flag.long(long), flag.argumentless(argument), flag.required),
+      }))
+
+    const pairs = fc
+      .tuple(flag_, flag_)
+      .filter(([one, two]) => one.name !== two.name)
+      .filter(([one, two]) => one.long !== two.long)
+
+    fc.assert(
+      fc.property(pairs, ([one, two]) => {
+        const buffer = toBuffer([`--${one.long}`, `--${two.long}`])
+        const start = stream.stream(buffer)
+        const next = stream.stream(buffer, buffer.length)
+        const parser = command.flags__({
+          [one.name]: one.flag,
+          [two.name]: two.flag,
+        })
+        const result = parser(start)
+        const value = tuple(
+          { [one.name]: one.argument, [two.name]: two.argument },
+          constVoid()
+        )
+        const expected = parseResult.success(value, next, start)
+        expect(result).toStrictEqual(expected)
+      })
+    )
+  })
 })
 
 // flags -> arguments ->
