@@ -1,9 +1,33 @@
-import { pipe, tuple } from "fp-ts/lib/function"
+import { constVoid, pipe, tuple } from "fp-ts/lib/function"
 import * as flag from "./flag"
 import * as command from "./command"
 import { parseResult, stream } from "parser-ts"
-import { toBuffer } from "../test-utils"
+import { kebabCase, toBuffer } from "../test-utils"
 import { option } from "fp-ts"
+import fc from "fast-check"
+
+describe("flag new", () => {
+  it("should allow a single flag", () => {
+    const flag_ = fc.tuple(kebabCase, fc.string()).map(([long, argument]) => ({
+      long,
+      argument,
+      flag: pipe(flag.long(long), flag.argumentless(argument), flag.required),
+    }))
+
+    fc.assert(
+      fc.property(flag_, fc.string(), ({ argument, flag, long }, name) => {
+        const buffer = toBuffer([`--${long}`])
+        const start = stream.stream(buffer)
+        const next = stream.stream(buffer, buffer.length)
+        const parser = command.flags__({ [name]: flag })
+        const result = parser(start)
+        const value = tuple({ [name]: argument }, constVoid())
+        const expected = parseResult.success(value, next, start)
+        expect(result).toStrictEqual(expected)
+      })
+    )
+  })
+})
 
 // flags -> arguments ->
 describe.skip("command", () => {

@@ -7,6 +7,10 @@ import { flags as flags_ } from "./flags"
 import * as cli from "../cli"
 import * as argument_ from "../argument"
 
+export const flags__: <T extends Record<string, any>>(structs: {
+  [P in keyof T]: cli.CLI<flag.Flag, T[P]>
+}) => cli.CLI<Command, T> = flags_
+
 export const flags: <T extends Record<string, any>>(structs: {
   [P in keyof T]: cli.CLI<flag.Flag, T[P]>
 }) => cli.CLI<Command, T> = flags_
