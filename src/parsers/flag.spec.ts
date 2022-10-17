@@ -102,22 +102,16 @@ describe("flags", () => {
     })
 
     describe(flags.shorts, () => {
-      it.skip("should match when the short flag is provided", () => {
+      it("should match when the short flag is provided", () => {
         fc.assert(
-          fc.property(charLetter, (name) => {
-            const flag = `--${name}`
+          fc.property(kebabCase, charLetter, (long, included) => {
+            const flag = `-${included}`
             const buffer = toBuffer([flag])
             const start = stream.stream(buffer)
             const next = stream.stream(buffer, buffer.length)
-
-            const result = flags.long(name)(start)
-
-            const expected = parseResult.success(
-              tuple(constVoid(), flags.named_),
-              next,
-              start
-            )
-
+            const result = pipe(flags.long(long), flags.shorts(included))(start)
+            const value = tuple(constVoid(), constVoid())
+            const expected = parseResult.success(value, next, start)
             expect(result).toStrictEqual(expected)
           })
         )
