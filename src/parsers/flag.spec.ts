@@ -3,6 +3,7 @@ import { parseResult, stream } from "parser-ts"
 import * as flags from "./flag"
 import { kebabCase, toBuffer } from "../test-utils"
 import fc from "fast-check"
+import { array, string } from "fp-ts"
 
 describe("flags", () => {
   describe("named", () => {
@@ -47,7 +48,35 @@ describe("flags", () => {
     })
 
     describe(flags.aliases, () => {
-      it.todo("should match the alias with a long flag")
+      it("should match the alias as a long flag", () => {
+        const kebabCaseUnions = fc
+          .array(kebabCase, { minLength: 1 })
+          .filter((bs) =>
+            bs.some((b, i, bs) => bs.slice(i + 1).some((a) => b !== a))
+          )
+
+        fc.assert(
+          fc.property(kebabCaseUnions, ([name, ...aliases]) => {
+            const parser_ = pipe(flags.long(name), flags.aliases(...aliases))
+
+            for (const alias of aliases) {
+              const flag = `--${alias}`
+              const buffer = toBuffer([flag])
+              const start = stream.stream(buffer)
+              const next = stream.stream(buffer, buffer.length)
+              const result = parser_(start)
+
+              const expected = parseResult.success(
+                tuple(constVoid(), flags.named_),
+                next,
+                start
+              )
+
+              expect(result).toStrictEqual(expected)
+            }
+          })
+        )
+      })
       it.todo("should match only one of the aliases")
     })
 
