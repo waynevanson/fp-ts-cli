@@ -102,7 +102,7 @@ describe("flags", () => {
     })
 
     describe(flags.shorts, () => {
-      it("should match when the short flag is provided", () => {
+      it.skip("should match when the short flag is provided", () => {
         fc.assert(
           fc.property(charLetter, (name) => {
             const flag = `--${name}`
@@ -123,9 +123,28 @@ describe("flags", () => {
         )
       })
 
-      it.todo(
-        "should not match any short when the non-short flag has been provided"
-      )
+      it("should not match any short when the non-short flag has been provided", () => {
+        fc.assert(
+          fc.property(
+            kebabCase,
+            charUnions({ minLength: 2, maxLength: 2 }),
+            (long, [included, excluded]) => {
+              const flag = `-${excluded}`
+              const buffer = toBuffer([flag])
+              const start = stream.stream(buffer)
+              const result = pipe(
+                flags.long(long),
+                flags.shorts(included)
+              )(start)
+              const expected = parseResult.error(start, [
+                "shortFlag",
+                "longFlag",
+              ])
+              expect(result).toStrictEqual(expected)
+            }
+          )
+        )
+      })
     })
   })
 
