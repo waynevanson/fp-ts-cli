@@ -6,7 +6,7 @@ import { toBuffer } from "../test-utils"
 import { option } from "fp-ts"
 
 // flags -> arguments ->
-describe("command", () => {
+describe.skip("command", () => {
   describe("flags", () => {
     it("should ensure both required flags are present", () => {
       expect.assertions(1)

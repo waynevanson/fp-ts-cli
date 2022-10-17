@@ -2,8 +2,8 @@ import { option, readonlyTuple } from "fp-ts"
 import { constant, constVoid, pipe, tuple } from "fp-ts/lib/function"
 import { iso, Newtype } from "newtype-ts"
 import { parser } from "parser-ts"
+import { parseArgs } from "util"
 import * as parserArgs from "./args"
-import * as parserString from "./string"
 import * as cli from "./cli"
 
 /**
@@ -38,24 +38,43 @@ export const named_ = iso<Named>().from()
  */
 export const long = (long: string): cli.CLI<Named, void> =>
   pipe(
-    parserString.longFlag(long),
-    parserArgs.fromStringParser,
+    parserArgs.longFlag(long),
     parser.map(constant(tuple(constVoid(), named_)))
   )
 
+// fail a parser
+const invert = <I, A>(p: parser.Parser<I, A>): parser.Parser<I, void> =>
+  pipe(
+    p,
+    parser.optional,
+    parser.chain(
+      option.match(
+        () => parser.succeed(constVoid()),
+        () => parser.zero()
+      )
+    )
+  )
+
+// match one of, then match nonof
 /**
  * Creates additional long flags (`--flag-alias`) with the provided **kebab-case** name.
  * @category Combinator
  */
 export const aliases =
   (...aliases: ReadonlyArray<string>) =>
-  (fa: cli.CLI<Named, void>): cli.CLI<Named, void> =>
-    pipe(
-      parserString.longFlags(aliases),
-      parserArgs.fromStringParser,
-      parser.map(constant(tuple(constVoid(), named_))),
-      parser.alt(() => fa)
+  (fa: cli.CLI<Named, void>): cli.CLI<Named, void> => {
+    const match = pipe(parserArgs.longFlags(aliases), parser.map(constVoid))
+
+    const mismatch = pipe(match, invert, parser.lookAhead)
+
+    return pipe(
+      fa,
+      parser.map(constVoid),
+      parser.alt(() => match),
+      parser.apFirst(parser.expected(mismatch, "multipleFlags")),
+      parser.map(constant(tuple(constVoid(), named_)))
     )
+  }
 
 /**
  * Creates short flags (`-f`) with the provided **single character**.
@@ -65,8 +84,7 @@ export const shorts =
   (...shorts: ReadonlyArray<string>) =>
   (fa: cli.CLI<Named, void>): cli.CLI<Named, void> =>
     pipe(
-      parserString.shortFlags(shorts),
-      parserArgs.fromStringParser,
+      parserArgs.shortFlags(shorts),
       parser.map(constant(tuple(constVoid(), named_))),
       parser.alt(() => fa)
     )
