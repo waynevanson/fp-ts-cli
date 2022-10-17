@@ -1,5 +1,5 @@
-import fc, { ArrayConstraints } from "fast-check"
-import { readonlyArray } from "fp-ts"
+import fc, { ArrayConstraints, uniqueArray } from "fast-check"
+import { eq, readonlyArray, string } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
 
 export const toBuffer = (
@@ -16,8 +16,15 @@ export const kebabCase = fc
   .filter((string) => /^[a-z]+(-[a-z]*)*$/.test(string))
 
 export const kebabCaseUnions = (arrayConstraints?: ArrayConstraints) =>
-  fc
-    .array(kebabCase, arrayConstraints)
-    .filter(
-      (bs) => !bs.some((b, i, bs) => bs.slice(i + 1).some((a) => b === a))
-    )
+  fc.uniqueArray(kebabCase, {
+    ...arrayConstraints,
+    comparator: "IsStrictlyEqual",
+  })
+
+export const charLetter = fc.char().filter((char) => /^[a-z]$/.test(char))
+
+export const charUnions = (arrayConstraints?: ArrayConstraints) =>
+  fc.uniqueArray(charLetter, {
+    ...arrayConstraints,
+    comparator: "IsStrictlyEqual",
+  })

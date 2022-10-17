@@ -1,7 +1,13 @@
 import { constVoid, pipe, tuple } from "fp-ts/lib/function"
 import { parseResult, stream } from "parser-ts"
 import * as flags from "./flag"
-import { kebabCase, kebabCaseUnions, toBuffer } from "../test-utils"
+import {
+  kebabCase,
+  kebabCaseUnions,
+  toBuffer,
+  charUnions,
+  charLetter,
+} from "../test-utils"
 import fc from "fast-check"
 
 describe("flags", () => {
@@ -96,7 +102,27 @@ describe("flags", () => {
     })
 
     describe(flags.shorts, () => {
-      it.todo("should match when the short flag is provided")
+      it("should match when the short flag is provided", () => {
+        fc.assert(
+          fc.property(charLetter, (name) => {
+            const flag = `--${name}`
+            const buffer = toBuffer([flag])
+            const start = stream.stream(buffer)
+            const next = stream.stream(buffer, buffer.length)
+
+            const result = flags.long(name)(start)
+
+            const expected = parseResult.success(
+              tuple(constVoid(), flags.named_),
+              next,
+              start
+            )
+
+            expect(result).toStrictEqual(expected)
+          })
+        )
+      })
+
       it.todo(
         "should not match any short when the non-short flag has been provided"
       )
