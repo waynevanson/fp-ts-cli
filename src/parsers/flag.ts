@@ -82,9 +82,28 @@ export const shorts =
   (...shorts: ReadonlyArray<string>) =>
   (fa: cli.CLI<Named, void>): cli.CLI<Named, void> =>
     pipe(
-      parserArgs.shortFlags(shorts),
-      parser.map(constant(tuple(constVoid(), named_))),
-      parser.alt(() => fa)
+      identity.Do,
+      identity.apS(
+        "match",
+        pipe(parserArgs.shortFlags(shorts), parser.map(constVoid))
+      ),
+      identity.bind("mismatch", ({ match }) =>
+        pipe(
+          match,
+          parser.invert("match"),
+          parser.lookAhead,
+          parser.expected("multipleFlags")
+        )
+      ),
+      identity.apS("main", pipe(fa, parser.map(constVoid))),
+      identity.map(({ match, mismatch, main }) =>
+        pipe(
+          main,
+          parser.alt(() => match),
+          parser.apFirst(mismatch)
+        )
+      ),
+      parser.map(constant(tuple(constVoid(), named_)))
     )
 
 /**

@@ -131,8 +131,8 @@ describe("flags", () => {
                 flags.shorts(included)
               )(start)
               const expected = parseResult.error(start, [
-                "shortFlag",
                 "longFlag",
+                "shortFlag",
               ])
               expect(result).toStrictEqual(expected)
             }
