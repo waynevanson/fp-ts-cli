@@ -1,5 +1,5 @@
-import fc, { ArrayConstraints, uniqueArray } from "fast-check"
-import { eq, readonlyArray, string } from "fp-ts"
+import fc, { ArrayConstraints } from "fast-check"
+import { readonlyArray } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
 
 export const toBuffer = (
