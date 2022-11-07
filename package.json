@@ -23,6 +23,8 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "@unsplash/sum-types": "^0.3.1",
+    "@unsplash/sum-types-fp-ts": "^0.3.0",
     "fast-check": "^3.1.2",
     "fp-ts-contrib": "^0.1.29",
     "fp-ts-indexed-monad": "^2.10.3",
@@ -30,7 +32,8 @@
     "io-ts": "^2.2.17",
     "monocle-ts": "^2.3.13",
     "newtype-ts": "^0.3.5",
-    "parser-ts": "^0.6.16"
+    "parser-ts": "^0.6.16",
+    "pattern-match-ts": "^0.0.4"
   },
   "peerDependencies": {
     "fp-ts": "^2.12.3"
