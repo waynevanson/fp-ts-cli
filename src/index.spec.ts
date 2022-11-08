@@ -5,9 +5,19 @@ import process from "process"
 
 describe("cli", () => {
   it("should parse the input?", () => {
-    const data = ["runtime", "file"]
+    const args: ReadonlyArray<string> = []
+    const runtime = "runtime"
+    const file = "file"
+
+    const data: Input = {
+      runtime: option.some(runtime),
+      file: option.some(file),
+      args,
+    }
+
     const result = run(data)
-    expect(result).toStrictEqual([])
+
+    expect(result).toStrictEqual(args)
   })
 
   it("should get the node environment from the outside world", () => {

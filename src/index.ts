@@ -7,8 +7,8 @@ export type Arg = string
 
 export type Argv = ReadonlyArray<Arg>
 
-export function run(argv: Argv): Argv {
-  return pipe(argv, readonlyArray.dropLeft(2))
+export function run(input: Input): ReadonlyArray<string> {
+  return input.args
 }
 
 export interface Input {
