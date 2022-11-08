@@ -1,5 +1,6 @@
+import { sequenceS } from "fp-ts/lib/Apply"
 import { pipe } from "fp-ts/lib/function"
-import { io, option, readonlyArray } from "./fp"
+import { io, option, reader, readonlyArray } from "./fp"
 import { argvNode } from "./side-effects"
 
 export type Arg = string
@@ -17,8 +18,12 @@ export interface Input {
 }
 
 export const node: io.IO<Input> = pipe(
-  io.Do,
-  io.bind("runtime", () => pipe(argvNode, io.map(readonlyArray.lookup(0)))),
-  io.bind("file", () => pipe(argvNode, io.map(readonlyArray.lookup(1)))),
-  io.bind("args", () => pipe(argvNode, io.map(readonlyArray.dropLeft(2))))
+  argvNode,
+  io.map(
+    sequenceS(reader.Apply)({
+      runtime: readonlyArray.lookup(0)<string>,
+      file: readonlyArray.lookup(1)<string>,
+      args: readonlyArray.dropLeft(2)<string>,
+    })
+  )
 )
