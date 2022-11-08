@@ -1,7 +1,7 @@
 import { option, readonlyArray } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
 import { run, node, Input } from "./index"
-import * as sideEffects from "./side-effects"
+import process from "process"
 
 describe("cli", () => {
   it("should parse the input?", () => {
@@ -17,7 +17,7 @@ describe("cli", () => {
 
     const argv = pipe([runtime, file], readonlyArray.concat(args))
 
-    jest.spyOn(sideEffects, "argvNode").mockImplementation(() => argv)
+    process.argv = argv as Array<string>
 
     const result = node()
 
