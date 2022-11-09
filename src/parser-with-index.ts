@@ -9,11 +9,10 @@ import { flow, Lazy, pipe } from "fp-ts/lib/function"
 import { Functor3 } from "fp-ts/lib/Functor"
 import { HKT, Kind, URIS } from "fp-ts/lib/HKT"
 import { Monad3 } from "fp-ts/lib/Monad"
+import { Option } from "fp-ts/lib/Option"
 import { Pointed3 } from "fp-ts/lib/Pointed"
 import { Predicate } from "fp-ts/lib/Predicate"
-import { Refinement } from "fp-ts/lib/Refinement"
 import { Zero3 } from "fp-ts/lib/Zero"
-import { parser } from "parser-ts"
 import { Indexable, Indexable1 } from "./indexable"
 
 export const URI = "ParserWithIndex"
@@ -179,6 +178,23 @@ export function getSat<F, E>(
       chain((value) => (f(value) ? of(value) : zero()))
     )
 }
+
+export const optional = <R, E, A>(
+  fa: ParserWithIndex<R, E, A>
+): ParserWithIndex<R, E, Option<A>> =>
+  flow(
+    fa,
+    either.match(
+      (error) =>
+        either.right({
+          value: option.none,
+          start: error.input,
+          next: error.input,
+        }),
+      (success) =>
+        either.right({ ...success, value: option.some(success.value) })
+    )
+  )
 
 export const expected =
   (message: string) =>
