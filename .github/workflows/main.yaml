@@ -1,7 +1,11 @@
+# https://stackoverflow.com/questions/71728645/dont-run-github-actions-workflow-if-a-specific-set-of-files-are-changed
+
 on:
   push:
     branches:
       - "main"
+    paths-ignore:
+      - "*/**/*.md"
 
 jobs:
   test:
