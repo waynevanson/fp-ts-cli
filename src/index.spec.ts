@@ -1,7 +1,7 @@
-import { option, readonlyArray, readonlyNonEmptyArray } from "fp-ts"
+import { either, option, readonlyArray, readonlyNonEmptyArray } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
-import { run, node, Input, Named, required } from "./index"
 import process from "process"
+import { Input, Named, node, required, run } from "./index"
 
 describe("cli", () => {
   it("should parse the input?", () => {
@@ -29,7 +29,27 @@ describe("cli", () => {
     const constructor = required(named)
     const args = [`--${long}`]
     const result = constructor(args)
-    expect(result).toStrictEqual(true)
+    const expected = either.right(true)
+    expect(result).toStrictEqual(expected)
+  })
+
+  it("should fail when a the flag does not exist", () => {
+    const long = {
+      required: "flag-required",
+      instead: "flag-instead",
+    }
+
+    const named: Named = {
+      longs: readonlyNonEmptyArray.of(long.required),
+      shorts: readonlyArray.zero(),
+    }
+
+    const constructor = required(named)
+    const args = [`--${long.instead}`]
+
+    const result = constructor(args)
+    const expected = either.left("Args does not contain any long flags")
+    expect(result).toStrictEqual(expected)
   })
 
   it("should get the node environment from the outside world", () => {
