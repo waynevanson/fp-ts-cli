@@ -1,6 +1,6 @@
-import { option, readonlyArray } from "fp-ts"
+import { option, readonlyArray, readonlyNonEmptyArray } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
-import { run, node, Input } from "./index"
+import { run, node, Input, Named, required } from "./index"
 import process from "process"
 
 describe("cli", () => {
@@ -18,6 +18,18 @@ describe("cli", () => {
     const result = run(data)
 
     expect(result).toStrictEqual(args)
+  })
+
+  it("should allow parsing a long flag", () => {
+    const long = "flag-name"
+    const named: Named = {
+      longs: readonlyNonEmptyArray.of(long),
+      shorts: readonlyArray.zero(),
+    }
+    const constructor = required(named)
+    const args = [`--${long}`]
+    const result = constructor(args)
+    expect(result).toStrictEqual(true)
   })
 
   it("should get the node environment from the outside world", () => {

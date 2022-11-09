@@ -1,6 +1,6 @@
 import { sequenceS } from "fp-ts/lib/Apply"
 import { pipe } from "fp-ts/lib/function"
-import { io, option, reader, readonlyArray } from "./fp"
+import { io, option, reader, readonlyArray, readonlyNonEmptyArray } from "./fp"
 import { argvNode } from "./side-effects"
 
 export type Arg = string
@@ -27,3 +27,10 @@ export const node: io.IO<Input> = pipe(
     })
   )
 )
+
+export interface Named {
+  readonly longs: readonlyNonEmptyArray.ReadonlyNonEmptyArray<string>
+  readonly shorts: ReadonlyArray<string>
+}
+
+export const required = (named: Named) => (args: ReadonlyArray<string>) => true
