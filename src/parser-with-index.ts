@@ -4,7 +4,7 @@ import { Alternative3 } from "fp-ts/lib/Alternative"
 import { Applicative3 } from "fp-ts/lib/Applicative"
 import { Apply3 } from "fp-ts/lib/Apply"
 import { Chain3 } from "fp-ts/lib/Chain"
-import { Either } from "fp-ts/lib/Either"
+import { PredicateWithIndex } from "fp-ts/lib/FilterableWithIndex"
 import { flow, Lazy, pipe } from "fp-ts/lib/function"
 import { Functor3 } from "fp-ts/lib/Functor"
 import { HKT, Kind, URIS } from "fp-ts/lib/HKT"
@@ -14,31 +14,13 @@ import { Pointed3 } from "fp-ts/lib/Pointed"
 import { Predicate } from "fp-ts/lib/Predicate"
 import { Zero3 } from "fp-ts/lib/Zero"
 import { Indexable, Indexable1 } from "./indexable"
+import {
+  ParseResultWithIndex,
+  StreamWithIndex,
+} from "./parse-result-with-index"
 
 export const URI = "ParserWithIndex"
 export type URI = typeof URI
-
-export interface StreamWithIndex<R, E> {
-  readonly buffer: R
-  readonly cursor: E
-}
-
-export interface ParseSuccessWithIndex<R, E, A> {
-  readonly next: StreamWithIndex<R, E>
-  readonly start: StreamWithIndex<R, E>
-  readonly value: A
-}
-
-export interface ParseErrorWithIndex<R, E> {
-  readonly expected: ReadonlyArray<string>
-  readonly fatal: boolean
-  readonly input: StreamWithIndex<R, E>
-}
-
-export type ParseResultWithIndex<R, E, A> = Either<
-  ParseErrorWithIndex<R, E>,
-  ParseSuccessWithIndex<R, E, A>
->
 
 export interface ParserWithIndex<R, E, A> {
   (input: StreamWithIndex<R, E>): ParseResultWithIndex<R, E, A>
@@ -163,6 +145,40 @@ export function getItem<F, E>(
     )
 }
 
+export function getItemWithIndex<F extends URIS, E>(
+  Indexable: Indexable1<F, E>
+): <R>() => ParserWithIndex<Kind<F, R>, E, { value: R; index: E }>
+export function getItemWithIndex<F, E>(
+  Indexable: Indexable<F, E>
+): <R>() => ParserWithIndex<HKT<F, R>, E, { value: R; index: E }>
+export function getItemWithIndex<F, E>(
+  Indexable: Indexable<F, E>
+): <R>() => ParserWithIndex<HKT<F, R>, E, { value: R; index: E }> {
+  return () => (input) =>
+    pipe(
+      input.buffer,
+      Indexable.lookup(input.cursor),
+      option.map((value) => ({
+        value,
+        start: input,
+        next: {
+          buffer: input.buffer,
+          cursor: Indexable.next(input.cursor)(input.buffer),
+        },
+      })),
+      either.fromOption(() => ({
+        fatal: false,
+        input,
+        expected: [],
+      })),
+      either.map(({ next, start, value }) => ({
+        value: { value, index: input.cursor },
+        start,
+        next,
+      }))
+    )
+}
+
 export function getSat<F extends URIS, E>(
   Indexable: Indexable1<F, E>
 ): <R>(f: Predicate<R>) => ParserWithIndex<Kind<F, R>, E, R>
@@ -177,6 +193,41 @@ export function getSat<F, E>(
       getItem(Indexable)<R>(),
       chain((value) => (f(value) ? of(value) : zero()))
     )
+}
+
+export function takeUntilWithIndex<F extends URIS, E>(
+  Indexable: Indexable1<F, E>
+): <R>(
+  f: PredicateWithIndex<E, R>
+) => ParserWithIndex<Kind<F, R>, E, ReadonlyArray<R>>
+export function takeUntilWithIndex<F, E>(
+  Indexable: Indexable<F, E>
+): <R>(
+  f: PredicateWithIndex<E, R>
+) => ParserWithIndex<HKT<F, R>, E, ReadonlyArray<R>>
+export function takeUntilWithIndex<F, E>(
+  Indexable: Indexable<F, E>
+): <R>(
+  f: PredicateWithIndex<E, R>
+) => ParserWithIndex<HKT<F, R>, E, ReadonlyArray<R>> {
+  return <R>(
+      predicateWithIndex: PredicateWithIndex<E, R>
+    ): ParserWithIndex<HKT<F, R>, E, ReadonlyArray<R>> =>
+    (input) => {
+      const result = []
+      const item = getItem(Indexable)<R>()
+
+      const res = item(input)
+      if (either.isLeft(res)) return res
+
+      let currentIndex = input.cursor
+
+      while (predicateWithIndex(currentIndex, value)) {
+        result.push(value)
+      }
+
+      return either.right({ value: result, next: res.right.next, start: input })
+    }
 }
 
 export const optional = <R, E, A>(
