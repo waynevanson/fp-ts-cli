@@ -1,10 +1,11 @@
-import { option, readonlyArray } from "fp-ts"
+import { either, option, readonlyArray } from "fp-ts"
 import { Alt1 } from "fp-ts/lib/Alt"
 import { Alternative1 } from "fp-ts/lib/Alternative"
 import { Applicative1 } from "fp-ts/lib/Applicative"
 import { Apply1 } from "fp-ts/lib/Apply"
 import { Chain1 } from "fp-ts/lib/Chain"
-import { Lazy, pipe } from "fp-ts/lib/function"
+import { tailRec } from "fp-ts/lib/ChainRec"
+import { flow, Lazy, pipe } from "fp-ts/lib/function"
 import { Functor1 } from "fp-ts/lib/Functor"
 import { Monad1 } from "fp-ts/lib/Monad"
 import { Pointed1 } from "fp-ts/lib/Pointed"
@@ -12,6 +13,8 @@ import { Predicate } from "fp-ts/lib/Predicate"
 import { Zero1 } from "fp-ts/lib/Zero"
 import { Option } from "fp-ts/Option"
 import { Indexable1 } from "./indexable"
+import * as outerinner from "./outer-inner"
+import * as parseResultWithIndex from "./parse-result-with-index"
 import * as parserWithIndex from "./parser-with-index"
 import * as readonlyArrayReadonlyArray from "./readonly-array-readonly-array"
 import { ReadonlyArrayReadonlyArray } from "./readonly-array-readonly-array"
@@ -20,10 +23,7 @@ export const URI = "ParserArgs"
 export type URI = typeof URI
 export type Input = ReadonlyArrayReadonlyArray<string>
 
-export interface Index {
-  readonly outer: number
-  readonly inner: number
-}
+export type Index = outerinner.OuterInner
 
 export interface ParserArgs<A>
   extends parserWithIndex.ParserWithIndex<Input, Index, A> {}
@@ -45,8 +45,8 @@ const _lookup: Indexable1<readonlyArrayReadonlyArray.URI, Index>["lookup"] =
 export const Indexable: Indexable1<readonlyArrayReadonlyArray.URI, Index> = {
   lookup: _lookup,
   next: (index) => (fa) => {
-    const nextInner = { ...index, inner: index.inner + 1 }
-    const nextOuter = { ...index, outer: index.outer + 1 }
+    const nextInner = outerinner.incrementInner(index)
+    const nextOuter = outerinner.incrementOuter(index)
     return pipe(
       fa,
       _lookup(nextInner),
@@ -88,7 +88,8 @@ export const Monad: Monad1<URI> = {
   ...Applicative,
 }
 
-export const item: () => ParserArgs<string> = parserWithIndex.getItem(Indexable)
+export const inner: ParserArgs<string> = parserWithIndex.getItem(Indexable)()
+export const innerWithIndex = parserWithIndex.getItemWithIndex(Indexable)()
 
 export const sat: (f: Predicate<string>) => ParserArgs<string> =
   parserWithIndex.getSat(Indexable)
@@ -111,3 +112,35 @@ export const Alternative: Alternative1<URI> = {
   ...Applicative,
   ...Alt,
 }
+
+export const char = (char: string): ParserArgs<string> =>
+  sat((string) => string === char[0])
+
+// do parsers have conjunction
+
+// left is the input, right is the chars
+export const outer: ParserArgs<string> = (start) =>
+  tailRec(
+    {
+      next: start,
+      start,
+      value: "",
+    } as parseResultWithIndex.ParseSuccessWithIndex<Input, Index, string>,
+    (success) =>
+      pipe(
+        success.next,
+        //maybe
+        map((value) => success.value + value)(inner),
+        either.match(
+          flow(either.left, either.right),
+          flow(
+            either.fromPredicate(
+              (success) =>
+                success.next.cursor.outer > success.start.cursor.outer,
+              (e) => e
+            ),
+            either.map((a) => either.right(a))
+          )
+        )
+      )
+  )
