@@ -31,6 +31,6 @@ describe("parser-args", () => {
     const next = parseResultWithIndex.stream(buffer, { outer: 0, inner: 11 })
     const expected = parseResultWithIndex.success(one, next, start)
 
-    const parserOne = parserArgs.takeUntilWithIndex()
+    // const parserOne = parserArgs.takeUntilWithIndex()
   })
 })
