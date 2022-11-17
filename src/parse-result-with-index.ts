@@ -1,7 +1,6 @@
 import { either } from "fp-ts"
 import { Either } from "fp-ts/lib/Either"
 import { pipe } from "fp-ts/lib/function"
-import { parseResult } from "parser-ts"
 
 export interface StreamWithIndex<R, E> {
   readonly buffer: R
