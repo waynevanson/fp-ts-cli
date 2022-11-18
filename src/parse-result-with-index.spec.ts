@@ -27,6 +27,17 @@ describe("success", () => {
   })
 })
 
+describe("error", () => {
+  it("should pass th args", () => {
+    const buffer = "one"
+    const input = parseResultWithIndex.stream(buffer, 0)
+    const expected = [] as ReadonlyArray<never>
+    const fatal = true
+    const result = parseResultWithIndex.error(input, expected, fatal)
+    const expected_ = either.left({ input, expected, fatal })
+    expect(result).toStrictEqual(expected_)
+  })
+})
 describe("map", () => {
   it("should apply a function to the value inside the successful result", () => {
     const n = 3
