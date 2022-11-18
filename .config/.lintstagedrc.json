@@ -2,6 +2,6 @@
   "*.{js,ts,rc,json,md}": ["prettier --write"],
   "*.ts": [
     "eslint --fix",
-    "jest --coverage=false --passWithNoTests --findRelatedTests"
+    "yarn jest --coverage=false --passWithNoTests --findRelatedTests"
   ]
 }
