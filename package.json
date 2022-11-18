@@ -11,7 +11,8 @@
   "scripts": {
     "build": "tsc -p .config/tsconfig.build.json",
     "prepare": "husky install",
-    "jest": "jest --config .config/jest.config.ts"
+    "jest": "jest --config .config/jest.config.ts",
+    "lint-staged": "lint-staged --config .config/.lintstagedrc.json"
   },
   "devDependencies": {
     "@jest/types": "^28.1.3",
