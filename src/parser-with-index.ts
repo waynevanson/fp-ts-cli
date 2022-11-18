@@ -19,6 +19,7 @@ import {
   ParseResultWithIndex,
   StreamWithIndex,
 } from "./parse-result-with-index"
+import * as parseResultWithIndex from "./parse-result-with-index"
 
 export const URI = "ParserWithIndex"
 export type URI = typeof URI
@@ -206,6 +207,7 @@ export function takeUntilWithIndex<F, E>(
 ): <R>(
   f: PredicateWithIndex<E, R>
 ) => ParserWithIndex<HKT<F, R>, E, ReadonlyArray<R>>
+
 export function takeUntilWithIndex<F, E>(
   Indexable: Indexable<F, E>
 ): <R>(
@@ -215,19 +217,29 @@ export function takeUntilWithIndex<F, E>(
       predicateWithIndex: PredicateWithIndex<E, R>
     ): ParserWithIndex<HKT<F, R>, E, ReadonlyArray<R>> =>
     (input) => {
-      const result = []
-      const item = getItem(Indexable)<R>()
+      const value: Array<R> = []
 
-      const res = item(input)
-      if (either.isLeft(res)) return res
+      let index = input.cursor
+      let next = input.buffer
+      let a: R
 
-      let currentIndex = input.cursor
+      do {
+        const c = Indexable.lookup(index)(next)
 
-      while (predicateWithIndex(currentIndex, value)) {
-        result.push(value)
-      }
+        if (option.isNone(c)) {
+          return parseResultWithIndex.error({ buffer: next, cursor: index })
+        }
 
-      return either.right({ value: result, next: res.right.next, start: input })
+        a = c.value
+        index = Indexable.next(index)(next)
+        value.push(a)
+      } while (predicateWithIndex(index, a))
+
+      return either.right({
+        value: value as ReadonlyArray<R>,
+        next: parseResultWithIndex.stream(next, index),
+        start: input,
+      })
     }
 }
 
