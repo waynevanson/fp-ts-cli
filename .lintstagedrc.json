@@ -1,4 +1,7 @@
 {
   "*.{js,ts,rc,json,md}": ["prettier --write"],
-  "*.ts": ["eslint --fix", "jest --coverage=false --findRelatedTests"]
+  "*.ts": [
+    "eslint --fix",
+    "jest --coverage=false --passWithNoTests --findRelatedTests"
+  ]
 }
