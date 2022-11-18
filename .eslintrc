@@ -21,5 +21,13 @@
       }
     ]
   },
-  "ignorePatterns": ["dist/", "coverage/"]
+  "ignorePatterns": ["dist/", "coverage/"],
+  "overrides": [
+    {
+      "env": { "jest": true, "jest/globals": true },
+      "files": ["**/*.spec.ts"],
+      "plugins": ["jest"],
+      "extends": ["plugin:jest/style"]
+    }
+  ]
 }
