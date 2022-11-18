@@ -10,7 +10,9 @@ export const incrementInner: Endomorphism<OuterInner> = ({ outer, inner }) => ({
   inner: inner + 1,
 })
 
-export const incrementOuter: Endomorphism<OuterInner> = ({ outer, inner }) => ({
+export const incrementOuter: Endomorphism<OuterInner> = ({ outer }) => ({
   outer: outer + 1,
-  inner: inner,
+  inner: 0,
 })
+
+export const empty: OuterInner = { inner: 0, outer: 0 }

@@ -1,7 +1,10 @@
 import { either, option, readonlyArray, readonlyNonEmptyArray } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
 import process from "process"
+import { parseResult, stream } from "./fp/parser"
 import { Input, Named, node, required, run } from "./index"
+import { toBuffer } from "./test-utils"
+import { OuterInner } from "./outer-inner"
 
 describe("cli", () => {
   it("should parse the input?", () => {
@@ -20,16 +23,19 @@ describe("cli", () => {
     expect(result).toStrictEqual(args)
   })
 
-  it("should allow parsing a long flag", () => {
+  it.only("should allow parsing a long flag", () => {
     const long = "flag-name"
     const named: Named = {
       longs: readonlyNonEmptyArray.of(long),
       shorts: readonlyArray.zero(),
     }
     const constructor = required(named)
-    const args = [`--${long}`]
-    const result = constructor(args)
-    const expected = either.right(true)
+    const buffer = toBuffer([`--${long}`])
+    const start = stream.stream(buffer)
+    const end = stream.stream(buffer, buffer.length)
+
+    const result = constructor({ buffer, cursor: { inner: 0, outer: 0 } })
+    const expected = parseResult.success(true, end, start)
     expect(result).toStrictEqual(expected)
   })
 

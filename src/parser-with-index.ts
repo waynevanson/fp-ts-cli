@@ -12,6 +12,7 @@ import { Monad3 } from "fp-ts/lib/Monad"
 import { Option } from "fp-ts/lib/Option"
 import { Pointed3 } from "fp-ts/lib/Pointed"
 import { Predicate } from "fp-ts/lib/Predicate"
+import { Semigroup } from "fp-ts/lib/Semigroup"
 import { Zero3 } from "fp-ts/lib/Zero"
 import { Indexable, Indexable1 } from "./indexable"
 import {
@@ -254,3 +255,13 @@ export const expected =
       fa,
       either.mapLeft((error) => ({ ...error, expected: [message] }))
     )
+
+export const getAltSemigroup = <R, E, A>(): Semigroup<
+  ParserWithIndex<R, E, A>
+> => ({
+  concat: (x, y) =>
+    pipe(
+      x,
+      alt(() => y)
+    ),
+})

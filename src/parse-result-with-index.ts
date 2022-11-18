@@ -8,6 +8,11 @@ export interface StreamWithIndex<R, E> {
   readonly cursor: E
 }
 
+export const stream = <R, E>(buffer: R, cursor: E): StreamWithIndex<R, E> => ({
+  buffer,
+  cursor,
+})
+
 export interface ParseSuccessWithIndex<R, E, A> {
   readonly next: StreamWithIndex<R, E>
   readonly start: StreamWithIndex<R, E>

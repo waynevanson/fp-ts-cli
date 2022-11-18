@@ -5,11 +5,13 @@ import { Applicative1 } from "fp-ts/lib/Applicative"
 import { Apply1 } from "fp-ts/lib/Apply"
 import { Chain1 } from "fp-ts/lib/Chain"
 import { tailRec } from "fp-ts/lib/ChainRec"
+import { PredicateWithIndex } from "fp-ts/lib/FilterableWithIndex"
 import { flow, Lazy, pipe } from "fp-ts/lib/function"
 import { Functor1 } from "fp-ts/lib/Functor"
 import { Monad1 } from "fp-ts/lib/Monad"
 import { Pointed1 } from "fp-ts/lib/Pointed"
 import { Predicate } from "fp-ts/lib/Predicate"
+import { Semigroup } from "fp-ts/lib/Semigroup"
 import { Zero1 } from "fp-ts/lib/Zero"
 import { Option } from "fp-ts/Option"
 import { Indexable1 } from "./indexable"
@@ -116,9 +118,6 @@ export const Alternative: Alternative1<URI> = {
 export const char = (char: string): ParserArgs<string> =>
   sat((string) => string === char[0])
 
-// do parsers have conjunction
-
-// left is the input, right is the chars
 export const outer: ParserArgs<string> = (start) =>
   tailRec(
     {
@@ -144,3 +143,11 @@ export const outer: ParserArgs<string> = (start) =>
         )
       )
   )
+
+export const getAltSemigroup = <A>(): Semigroup<ParserArgs<A>> =>
+  parserWithIndex.getAltSemigroup()
+
+export const takeUntilWithIndex: (
+  f: PredicateWithIndex<Index, string>
+) => ParserArgs<ReadonlyArray<string>> =
+  parserWithIndex.takeUntilWithIndex(Indexable)
