@@ -37,7 +37,17 @@ describe("error", () => {
     const expected_ = either.left({ input, expected, fatal })
     expect(result).toStrictEqual(expected_)
   })
+
+  it("should default the fatal parameter as false", () => {
+    const buffer = "one"
+    const input = parseResultWithIndex.stream(buffer, 0)
+    const expected = [] as ReadonlyArray<never>
+    const result = parseResultWithIndex.error(input, expected)
+    const expected_ = either.left({ input, expected, fatal: false })
+    expect(result).toStrictEqual(expected_)
+  })
 })
+
 describe("map", () => {
   it("should apply a function to the value inside the successful result", () => {
     const n = 3
