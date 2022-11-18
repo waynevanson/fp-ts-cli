@@ -1,6 +1,6 @@
 import { toBuffer } from "../test-utils";
 import * as parseResultWithIndex from "./parse-result-with-index";
-import * as parserArgs from "./index";
+import * as parserArgs from "./parser-args";
 import * as streamWithIndex from "./stream-with-index";
 
 describe("parser-args", () => {
