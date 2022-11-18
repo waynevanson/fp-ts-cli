@@ -46,6 +46,14 @@ describe("error", () => {
     const expected_ = either.left({ input, expected, fatal: false })
     expect(result).toStrictEqual(expected_)
   })
+
+  it("should default the expected as empty and empty as false", () => {
+    const buffer = "one"
+    const input = parseResultWithIndex.stream(buffer, 0)
+    const result = parseResultWithIndex.error(input)
+    const expected = either.left({ input, expected: [], fatal: false })
+    expect(result).toStrictEqual(expected)
+  })
 })
 
 describe("map", () => {
