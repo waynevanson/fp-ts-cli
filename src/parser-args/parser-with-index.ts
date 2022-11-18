@@ -220,7 +220,7 @@ export function takeUntilWithIndex<F, E>(
       const value: Array<R> = []
 
       let index = input.cursor
-      let next = input.buffer
+      const next = input.buffer
       let a: R
 
       do {

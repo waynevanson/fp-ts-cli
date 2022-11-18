@@ -1,10 +1,7 @@
-import { either, option, readonlyArray, readonlyNonEmptyArray } from "fp-ts"
+import { option, readonlyArray } from "fp-ts"
 import { pipe } from "fp-ts/lib/function"
 import process from "process"
-import { parseResult, stream } from "./fp/parser"
-import { Input, Named, node, run } from "./index"
-import { toBuffer } from "./test-utils"
-import { OuterInner } from "./parser-args/outer-inner"
+import { Input, node, run } from "./index"
 
 describe("cli", () => {
   it("should parse the input?", () => {

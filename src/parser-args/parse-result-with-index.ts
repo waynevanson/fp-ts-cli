@@ -38,7 +38,7 @@ export const success = <A, R, E>(
 export const error = <R, E>(
   input: StreamWithIndex<R, E>,
   expected: ReadonlyArray<string> = [],
-  fatal: boolean = false
+  fatal = false
 ): ParseResultWithIndex<R, E, never> => either.left({ input, expected, fatal })
 
 export const map =
