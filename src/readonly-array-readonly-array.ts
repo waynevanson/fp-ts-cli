@@ -1,4 +1,5 @@
 export const URI = "ReadonlyArrayReadonlyArray"
+
 export type URI = typeof URI
 export type ReadonlyArrayReadonlyArray<A> = ReadonlyArray<ReadonlyArray<A>>
 
