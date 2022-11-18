@@ -1,6 +1,6 @@
-import { toBuffer } from "./test-utils"
-import * as parseResultWithIndex from "./parse-result-with-index"
-import * as parserArgs from "./parser-args"
+import { toBuffer } from "../test-utils"
+import * as parseResultWithIndex from "../parse-result-with-index"
+import * as parserArgs from "."
 
 describe("parser-args", () => {
   describe("outer", () => {

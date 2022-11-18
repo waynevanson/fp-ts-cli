@@ -687,16 +687,6 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@unsplash/sum-types-fp-ts@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@unsplash/sum-types-fp-ts/-/sum-types-fp-ts-0.3.0.tgz#1b5b9bc18cf486a1de14dd299181b703562d3c11"
-  integrity sha512-GgAqUdu7cQ097daJPjWCG1rQl0hK356ZcTRl+V6m2MiwyZ5EzgzuR+rotM8iHnWcE9yQodntcWqkQg8iG47mFg==
-
-"@unsplash/sum-types@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@unsplash/sum-types/-/sum-types-0.3.1.tgz#a8a771dfae9433c5e261397ec88fee14d2e5cfd2"
-  integrity sha512-SLVfRXfU4TwvJprviIxCPDCsOSNaBLXUw2GpW8T7rmt5p4vAp3j3BpyWXAHPrKIL0PeMc2aJ12T6xyhjpWYLLg==
-
 acorn-walk@^8.1.1:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-8.2.0.tgz#741210f2e2426454508853a2f44d0ab83b7f69c1"

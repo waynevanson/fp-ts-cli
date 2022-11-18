@@ -4,7 +4,7 @@ import process from "process"
 import { parseResult, stream } from "./fp/parser"
 import { Input, Named, node, run } from "./index"
 import { toBuffer } from "./test-utils"
-import { OuterInner } from "./outer-inner"
+import { OuterInner } from "./parser-args/outer-inner"
 
 describe("cli", () => {
   it("should parse the input?", () => {
