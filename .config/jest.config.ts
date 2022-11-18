@@ -1,7 +1,8 @@
-import { Config } from "@jest/types"
+import { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
   preset: "ts-jest",
+  rootDir: "../",
   roots: ["src"],
   collectCoverage: true,
   coverageThreshold: {
@@ -12,6 +13,6 @@ const config: Config.InitialOptions = {
     "<rootDir>/src/fp/",
     "<rootDir>/src/test-utils.ts",
   ],
-}
+};
 
-export default config
+export default config;

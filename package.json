@@ -10,7 +10,8 @@
   "private": false,
   "scripts": {
     "build": "tsc -p .config/tsconfig.build.json",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "jest": "jest --config .config/jest.config.ts"
   },
   "devDependencies": {
     "@jest/types": "^28.1.3",
