@@ -8,7 +8,7 @@ const config: Config.InitialOptions = {
   coverageThreshold: {
     global: { branches: 100, functions: 100, lines: 100, statements: 100 },
   },
-  collectCoverageFrom: ["**/*.ts"],
+  collectCoverageFrom: ["**/*.ts", "!**/index.ts"],
   coveragePathIgnorePatterns: [
     "<rootDir>/src/fp/",
     "<rootDir>/src/test-utils.ts",
