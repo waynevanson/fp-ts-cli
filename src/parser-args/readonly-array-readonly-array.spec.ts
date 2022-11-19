@@ -101,5 +101,30 @@ describe("ReadonlyArrayReadonlyArray", () => {
         })
       );
     });
+
+    it("should should increment inner without incrementing outer", () => {
+      const fromnonemptyarrays = <A>(arrays: Array<Array<A>>) =>
+        fc
+          .integer({ min: 0, max: arrays.length - 1 })
+          .chain((outer) =>
+            fc
+              .integer({ min: 0, max: arrays[outer].length - 2 })
+              .map((inner) => ({ outer, inner, arrays }))
+          );
+
+      const arrays = fc.array(fc.array(fc.string(), { minLength: 2 }), {
+        minLength: 1,
+      });
+
+      const arbitrary = arrays.chain(fromnonemptyarrays);
+
+      fc.assert(
+        fc.property(arbitrary, ({ arrays, inner, outer }) => {
+          const index = { outer, inner };
+          const result = rara.Indexable.next(index)(arrays);
+          expect(result).toStrictEqual({ outer, inner: inner + 1 });
+        })
+      );
+    });
   });
 });
