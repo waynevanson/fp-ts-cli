@@ -1,4 +1,4 @@
-import { either, option, readonlyArray } from "fp-ts";
+import { either } from "fp-ts";
 import { Alt1 } from "fp-ts/lib/Alt";
 import { Alternative1 } from "fp-ts/lib/Alternative";
 import { Applicative1 } from "fp-ts/lib/Applicative";
@@ -14,18 +14,17 @@ import { Predicate } from "fp-ts/lib/Predicate";
 import { Semigroup } from "fp-ts/lib/Semigroup";
 import { Zero1 } from "fp-ts/lib/Zero";
 import { Option } from "fp-ts/Option";
-import { Indexable1 } from "./indexable";
-import * as outerinner from "./outer-inner";
 import * as parseResultWithIndex from "./parse-result-with-index";
 import * as parserWithIndex from "./parser-with-index";
-import * as readonlyArrayReadonlyArray from "./readonly-array-readonly-array";
-import { ReadonlyArrayReadonlyArray } from "./readonly-array-readonly-array";
+import {
+  Index,
+  Indexable,
+  ReadonlyArrayReadonlyArray,
+} from "./readonly-array-readonly-array";
 
 export const URI = "ParserArgs";
 export type URI = typeof URI;
 export type Input = ReadonlyArrayReadonlyArray<string>;
-
-export type Index = outerinner.OuterInner;
 
 export interface ParserArgs<A>
   extends parserWithIndex.ParserWithIndex<Input, Index, A> {}
@@ -35,28 +34,6 @@ declare module "fp-ts/HKT" {
     readonly [URI]: ParserArgs<A>;
   }
 }
-
-const _lookup: Indexable1<readonlyArrayReadonlyArray.URI, Index>["lookup"] =
-  (index) => (fa) =>
-    pipe(
-      fa,
-      readonlyArray.lookup(index.outer),
-      option.chain(readonlyArray.lookup(index.inner))
-    );
-
-export const Indexable: Indexable1<readonlyArrayReadonlyArray.URI, Index> = {
-  lookup: _lookup,
-  next: (index) => (fa) => {
-    const nextInner = outerinner.incrementInner(index);
-    const nextOuter = outerinner.incrementOuter(index);
-    return pipe(
-      fa,
-      _lookup(nextInner),
-      option.map(() => nextInner),
-      option.getOrElse(() => nextOuter)
-    );
-  },
-};
 
 export const of: <A>(a: A) => ParserArgs<A> = parserWithIndex.of;
 
