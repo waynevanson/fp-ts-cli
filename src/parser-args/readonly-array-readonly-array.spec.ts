@@ -81,4 +81,25 @@ describe("ReadonlyArrayReadonlyArray", () => {
       }
     );
   });
+
+  describe("next", () => {
+    it("should reset when going to next outer index", () => {
+      const fromnonemptyarrays = <A>(arrays: Array<Array<A>>) =>
+        fc
+          .integer({ min: 0, max: arrays.length - 1 })
+          .map((outer) => ({ outer, inner: arrays[outer].length, arrays }));
+
+      const arrays = fc.array(fc.array(fc.string()), { minLength: 1 });
+
+      const arbitrary = arrays.chain(fromnonemptyarrays);
+
+      fc.assert(
+        fc.property(arbitrary, ({ arrays, inner, outer }) => {
+          const index = { outer, inner };
+          const result = rara.Indexable.next(index)(arrays);
+          expect(result).toStrictEqual({ outer: outer + 1, inner: 0 });
+        })
+      );
+    });
+  });
 });
