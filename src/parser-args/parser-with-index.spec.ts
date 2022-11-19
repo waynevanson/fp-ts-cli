@@ -87,4 +87,23 @@ describe("parserWithIndex", () => {
       expect(result).toStrictEqual(expected);
     });
   });
+
+  describe("ap", () => {
+    it.concurrent(
+      "should apply the first parser over the second parser monadically",
+      () => {
+        const value = "a";
+        const buffer = ["one", "two"];
+        const start = streamWithIndex.stream(buffer, "three");
+        const f = (a: string) => a + "b";
+        const first = parserWithIndex.of(f);
+        const second = parserWithIndex.of(value);
+
+        const result = pipe(first, parserWithIndex.ap(second))(start);
+        const expected = parseResultWithIndex.success(f(value), start, start);
+
+        expect(result).toStrictEqual(expected);
+      }
+    );
+  });
 });
