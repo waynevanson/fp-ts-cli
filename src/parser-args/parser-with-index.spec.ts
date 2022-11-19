@@ -32,4 +32,23 @@ describe("parserWithIndex", () => {
       expect(result).toStrictEqual(expected);
     });
   });
+
+  describe("alt", () => {
+    it.concurrent("should parse one of the parsers", () => {
+      const value = "a";
+      const buffer = ["one", "two"];
+      const start = streamWithIndex.stream(buffer, "three");
+      const first = parserWithIndex.of(value);
+      const second = parserWithIndex.of("b");
+
+      const result = pipe(
+        first,
+        parserWithIndex.alt(() => second)
+      )(start);
+
+      const expected = parseResultWithIndex.success(value, start, start);
+
+      expect(result).toStrictEqual(expected);
+    });
+  });
 });
