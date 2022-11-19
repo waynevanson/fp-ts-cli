@@ -3,7 +3,11 @@
     "esModuleInterop": true,
     "strict": true,
     "stripInternal": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "module": "es6",
+    "target": "es6",
+    "moduleResolution": "node",
+    "skipLibCheck": true
   },
   "exclude": ["dist/"]
 }

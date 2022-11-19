@@ -1,11 +1,11 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "ES6",
     "target": "es6",
-    "outDir": "../dist/esm",
-    "declaration": true,
-    "declarationDir": "../dist/types"
+    "outDir": "../dist",
+    "declaration": true
   },
-  "include": ["../src"]
+  "include": ["../src"],
+  "exclude": ["../src/**/*.spec.*"]
 }
