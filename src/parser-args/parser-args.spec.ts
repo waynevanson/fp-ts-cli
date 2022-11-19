@@ -5,7 +5,7 @@ import * as streamWithIndex from "./stream-with-index";
 
 describe("parser-args", () => {
   describe("outer", () => {
-    it.skip("should allow parsing up to a whole", () => {
+    it.concurrent.skip("should allow parsing up to a whole", () => {
       const outer = "flag-name";
       const input = [outer, "next-f"];
       const buffer = toBuffer(input);

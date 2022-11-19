@@ -1,8 +1,8 @@
-import { URI } from "./readonly-array-readonly-array"
+import * as rara from "./readonly-array-readonly-array";
 
 describe("URI", () => {
-  it("should be ReadonlyArrayReadonlyArray", () => {
-    const uri = "ReadonlyArrayReadonlyArray"
-    expect(URI).toBe(uri)
-  })
-})
+  it.concurrent("should be ReadonlyArrayReadonlyArray", () => {
+    const uri = "ReadonlyArrayReadonlyArray";
+    expect(rara.URI).toBe(uri);
+  });
+});

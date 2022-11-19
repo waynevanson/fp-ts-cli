@@ -4,7 +4,7 @@ import * as parseResultWithIndex from "./parse-result-with-index";
 import * as streamWithIndex from "./stream-with-index";
 
 describe("success", () => {
-  it("should pass th args", () => {
+  it.concurrent("should pass th args", () => {
     const buffer = "one";
     const start = streamWithIndex.stream(buffer, 0);
     const next = streamWithIndex.stream(buffer, 4);
@@ -16,7 +16,7 @@ describe("success", () => {
 });
 
 describe("error", () => {
-  it("should pass th args", () => {
+  it.concurrent("should pass th args", () => {
     const buffer = "one";
     const input = streamWithIndex.stream(buffer, 0);
     const expected = [] as ReadonlyArray<never>;
@@ -26,7 +26,7 @@ describe("error", () => {
     expect(result).toStrictEqual(expected_);
   });
 
-  it("should default the fatal parameter as false", () => {
+  it.concurrent("should default the fatal parameter as false", () => {
     const buffer = "one";
     const input = streamWithIndex.stream(buffer, 0);
     const expected = [] as ReadonlyArray<never>;
@@ -35,26 +35,32 @@ describe("error", () => {
     expect(result).toStrictEqual(expected_);
   });
 
-  it("should default the expected as empty and empty as false", () => {
-    const buffer = "one";
-    const input = streamWithIndex.stream(buffer, 0);
-    const result = parseResultWithIndex.error(input);
-    const expected = either.left({ input, expected: [], fatal: false });
-    expect(result).toStrictEqual(expected);
-  });
+  it.concurrent(
+    "should default the expected as empty and empty as false",
+    () => {
+      const buffer = "one";
+      const input = streamWithIndex.stream(buffer, 0);
+      const result = parseResultWithIndex.error(input);
+      const expected = either.left({ input, expected: [], fatal: false });
+      expect(result).toStrictEqual(expected);
+    }
+  );
 });
 
 describe("map", () => {
-  it("should apply a function to the value inside the successful result", () => {
-    const n = 3;
-    const f = (n: number) => n + 1;
-    const stream = streamWithIndex.stream("one", 2);
-    const result = pipe(
-      parseResultWithIndex.success(n, stream, stream),
-      parseResultWithIndex.map(f)
-    );
+  it.concurrent(
+    "should apply a function to the value inside the successful result",
+    () => {
+      const n = 3;
+      const f = (n: number) => n + 1;
+      const stream = streamWithIndex.stream("one", 2);
+      const result = pipe(
+        parseResultWithIndex.success(n, stream, stream),
+        parseResultWithIndex.map(f)
+      );
 
-    const expected = parseResultWithIndex.success(f(n), stream, stream);
-    expect(result).toStrictEqual(expected);
-  });
+      const expected = parseResultWithIndex.success(f(n), stream, stream);
+      expect(result).toStrictEqual(expected);
+    }
+  );
 });
