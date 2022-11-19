@@ -34,7 +34,7 @@ describe("parserWithIndex", () => {
   });
 
   describe("alt", () => {
-    it.concurrent("should parse one of the parsers", () => {
+    it.concurrent("should apply the first parser if successful", () => {
       const value = "a";
       const buffer = ["one", "two"];
       const start = streamWithIndex.stream(buffer, "three");
@@ -51,4 +51,24 @@ describe("parserWithIndex", () => {
       expect(result).toStrictEqual(expected);
     });
   });
+
+  it.concurrent(
+    "should apply the second parser when the first is successful",
+    () => {
+      const value = "a";
+      const buffer = ["one", "two"];
+      const start = streamWithIndex.stream(buffer, "three");
+      const first = parserWithIndex.zero<unknown, unknown, string>();
+      const second = parserWithIndex.of(value);
+
+      const result = pipe(
+        first,
+        parserWithIndex.alt(() => second)
+      )(start);
+
+      const expected = parseResultWithIndex.success(value, start, start);
+
+      expect(result).toStrictEqual(expected);
+    }
+  );
 });
