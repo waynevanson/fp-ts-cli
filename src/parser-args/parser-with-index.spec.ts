@@ -105,5 +105,18 @@ describe("parserWithIndex", () => {
         expect(result).toStrictEqual(expected);
       }
     );
+
+    it.concurrent("should fail when the first fails", () => {
+      const buffer = ["one", "two"];
+      const start = streamWithIndex.stream(buffer, "three");
+      const f = (a: string) => a + "b";
+      const first = parserWithIndex.of(f);
+      const second = parserWithIndex.zero<unknown, unknown, string>();
+
+      const result = pipe(first, parserWithIndex.ap(second))(start);
+      const expected = parseResultWithIndex.error(start);
+
+      expect(result).toStrictEqual(expected);
+    });
   });
 });
