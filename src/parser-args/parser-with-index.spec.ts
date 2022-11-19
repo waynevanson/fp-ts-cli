@@ -17,7 +17,7 @@ describe("parserWithIndex", () => {
   });
 
   describe("map", () => {
-    it("should apply a function on the parsers value", () => {
+    it.concurrent("should apply a function on the parsers value", () => {
       const value = "a";
       const buffer = ["one", "two"];
       const start = streamWithIndex.stream(buffer, "three");
