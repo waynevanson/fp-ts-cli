@@ -135,4 +135,18 @@ describe("parserWithIndex", () => {
       expect(result).toStrictEqual(expected);
     });
   });
+
+  describe("chain", () => {
+    it("should chain with two successes", () => {
+      const buffer = ["one", "two"];
+      const start = streamWithIndex.stream(buffer, "three");
+      const first = parserWithIndex.of("a");
+      const f = (a: string) => parserWithIndex.of(a + "b");
+
+      const result = pipe(first, parserWithIndex.chain(f))(start);
+      const expected = parseResultWithIndex.success("ab", start, start);
+
+      expect(result).toStrictEqual(expected);
+    });
+  });
 });

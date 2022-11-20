@@ -65,6 +65,7 @@ export const ap =
       )
     );
 
+// istanbul ignore next
 export const Apply: Apply3<URI> = {
   ...Functor,
   ap: (fab, fa) => ap(fa)(fab),
