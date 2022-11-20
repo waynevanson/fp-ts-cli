@@ -137,7 +137,7 @@ describe("parserWithIndex", () => {
   });
 
   describe("chain", () => {
-    it("should chain with two successes", () => {
+    it.concurrent("should chain with two successes", () => {
       const buffer = ["one", "two"];
       const start = streamWithIndex.stream(buffer, "three");
       const first = parserWithIndex.of("a");
@@ -149,7 +149,7 @@ describe("parserWithIndex", () => {
       expect(result).toStrictEqual(expected);
     });
 
-    it("should fail when first parser fails", () => {
+    it.concurrent("should fail when first parser fails", () => {
       const buffer = ["one", "two"];
       const start = streamWithIndex.stream(buffer, "three");
       const first = parserWithIndex.zero<unknown, unknown, string>();
@@ -161,7 +161,7 @@ describe("parserWithIndex", () => {
       expect(result).toStrictEqual(expected);
     });
 
-    it("should fail when first parser fails", () => {
+    it.concurrent("should fail when first parser fails", () => {
       const buffer = ["one", "two"];
       const start = streamWithIndex.stream(buffer, "three");
       const first = parserWithIndex.of("a");
