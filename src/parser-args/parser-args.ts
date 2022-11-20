@@ -127,4 +127,4 @@ export const getAltSemigroup = <A>(): Semigroup<ParserArgs<A>> =>
 export const takeUntilWithIndex: (
   f: PredicateWithIndex<Index, string>
 ) => ParserArgs<ReadonlyArray<string>> =
-  parserWithIndex.takeUntilWithIndex(Indexable);
+  parserWithIndex.getTakeUntilWithIndex(Indexable);

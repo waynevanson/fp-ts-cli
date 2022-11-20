@@ -197,18 +197,18 @@ export function getSat<F, E>(
     );
 }
 
-export function takeUntilWithIndex<F extends URIS, E>(
+export function getTakeUntilWithIndex<F extends URIS, E>(
   Indexable: Indexable1<F, E>
 ): <R>(
   f: PredicateWithIndex<E, R>
 ) => ParserWithIndex<Kind<F, R>, E, ReadonlyArray<R>>;
-export function takeUntilWithIndex<F, E>(
+export function getTakeUntilWithIndex<F, E>(
   Indexable: Indexable<F, E>
 ): <R>(
   f: PredicateWithIndex<E, R>
 ) => ParserWithIndex<HKT<F, R>, E, ReadonlyArray<R>>;
 
-export function takeUntilWithIndex<F, E>(
+export function getTakeUntilWithIndex<F, E>(
   Indexable: Indexable<F, E>
 ): <R>(
   f: PredicateWithIndex<E, R>
