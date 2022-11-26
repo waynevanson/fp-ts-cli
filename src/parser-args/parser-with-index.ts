@@ -227,6 +227,7 @@ export function getTakeUntilWithIndex<F, E>(
         const c = Indexable.lookup(index)(next);
 
         if (option.isNone(c)) {
+          if (value.length > 0) break;
           return parseResultWithIndex.error({ buffer: next, cursor: index });
         }
 

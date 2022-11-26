@@ -213,4 +213,22 @@ describe("parserWithIndex", () => {
       expect(result).toStrictEqual(expected);
     });
   });
+
+  it.concurrent("should succeed when the whole buffer is consumer", () => {
+    const Index: Indexable1<readonlyArray.URI, number> = {
+      lookup: (i) => (fa) => readonlyArray.lookup(i)(fa),
+      next: (i) => () => i + 1,
+    };
+
+    const start = streamWithIndex.stream(["one", "two"], 0);
+    const end = streamWithIndex.stream(["one", "two"], 2);
+
+    const result = parserWithIndex.getTakeUntilWithIndex(Index)(() => true)(
+      start
+    );
+
+    const expected = parseResultWithIndex.success(["one", "two"], end, start);
+
+    expect(result).toStrictEqual(expected);
+  });
 });
