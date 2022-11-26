@@ -2,11 +2,13 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier"
+    "prettier",
+    "plugin:jest/style"
   ],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "prettier", "unused-imports"],
+  "plugins": ["@typescript-eslint", "prettier", "unused-imports", "jest"],
   "root": true,
+  "env": { "jest": true, "jest/globals": true },
   "rules": {
     "@typescript-eslint/no-empty-interface": 0,
     "@typescript-eslint/no-unused-vars": 0,
@@ -21,13 +23,5 @@
       }
     ]
   },
-  "ignorePatterns": ["dist/", "coverage/"],
-  "overrides": [
-    {
-      "env": { "jest": true, "jest/globals": true },
-      "files": ["**/*.spec.ts"],
-      "plugins": ["jest"],
-      "extends": ["plugin:jest/style"]
-    }
-  ]
+  "ignorePatterns": ["dist/", "coverage/"]
 }
