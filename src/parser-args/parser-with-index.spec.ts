@@ -2,6 +2,8 @@ import * as parserWithIndex from "./parser-with-index";
 import * as streamWithIndex from "./stream-with-index";
 import * as parseResultWithIndex from "./parse-result-with-index";
 import { pipe } from "fp-ts/lib/function";
+import { Indexable1 } from "./indexable";
+import { readonlyArray } from "fp-ts";
 
 describe("parserWithIndex", () => {
   describe("of", () => {
@@ -169,6 +171,27 @@ describe("parserWithIndex", () => {
 
       const result = pipe(first, parserWithIndex.chain(f))(start);
       const expected = parseResultWithIndex.error(start);
+
+      expect(result).toStrictEqual(expected);
+    });
+  });
+
+  describe("getTakeUntilWithIndex", () => {
+    it.concurrent("should take until it returns false", () => {
+      const Index: Indexable1<readonlyArray.URI, number> = {
+        lookup: (i) => (fa) => readonlyArray.lookup(i)(fa),
+        next: (i) => () => i + 1,
+      };
+
+      const buffer = ["one", "two", "three"];
+      const start = streamWithIndex.stream(buffer, 0);
+      const end = streamWithIndex.stream(buffer, 2);
+
+      const result = parserWithIndex.getTakeUntilWithIndex(Index)(
+        (i, _: string) => i < 2
+      )(start);
+
+      const expected = parseResultWithIndex.success(["one", "two"], end, start);
 
       expect(result).toStrictEqual(expected);
     });

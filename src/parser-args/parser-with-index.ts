@@ -235,11 +235,11 @@ export function getTakeUntilWithIndex<F, E>(
         value.push(a);
       } while (predicateWithIndex(index, a));
 
-      return either.right({
-        value: value as ReadonlyArray<R>,
-        next: streamWithIndex.stream(next, index),
-        start: input,
-      });
+      return parseResultWithIndex.success(
+        value as ReadonlyArray<R>,
+        streamWithIndex.stream(next, index),
+        input
+      );
     };
 }
 
