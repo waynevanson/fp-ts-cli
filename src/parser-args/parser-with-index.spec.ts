@@ -195,5 +195,22 @@ describe("parserWithIndex", () => {
 
       expect(result).toStrictEqual(expected);
     });
+
+    it.concurrent("should fail the buffer is empty", () => {
+      const Index: Indexable1<readonlyArray.URI, number> = {
+        lookup: (i) => (fa) => readonlyArray.lookup(i)(fa),
+        next: (i) => () => i + 1,
+      };
+
+      const start = streamWithIndex.stream([], 0);
+
+      const result = parserWithIndex.getTakeUntilWithIndex(Index)(
+        (i, _: string) => i < 2
+      )(start);
+
+      const expected = parseResultWithIndex.error(start);
+
+      expect(result).toStrictEqual(expected);
+    });
   });
 });
